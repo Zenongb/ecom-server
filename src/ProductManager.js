@@ -17,9 +17,13 @@ export default class ProductManager {
     if (-1 < products.findIndex(i => i.code === code)) { // esta linea puede ser cara
       throw new Error(`ya existe un producto con el codigo ${code}`)
     }
-    products.push(
-      new Product({title, description, price, thumbnail, code, stock})
-    )
+    try {
+      products.push(
+        new Product({title, description, price, thumbnail, code, stock})
+      )
+    } catch (err) {
+      throw new Error("Error al crear el producto", {cause: err})
+    }
     await this.#writeProds(products)
   }
 
@@ -43,7 +47,10 @@ export default class ProductManager {
         ...update
       })
     } catch (err) {
-      throw new Error("Error al actualizar Producto", {cause: err})
+      throw new Error(
+        `Error al actualizar Producto ${products[prodIndex].id}`,
+        {cause: err}
+      )
     }
     await this.#writeProds(products)   
   }
