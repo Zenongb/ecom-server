@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon 'js' ."
+    "start": "nodemon 'js' .",
+    "gen": "node src/productGenerator.js"
   },
   "keywords": [],
   "author": "@zenongb",
