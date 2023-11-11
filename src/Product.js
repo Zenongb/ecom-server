@@ -11,16 +11,14 @@ export default class Product {
 
   constructor({title, description, price, thumbnail, code, stock, id=undefined}) {
     // check de nullishness
-    let kill = false
     switch (true) {
       case !title:
       case !description:
       case !price:
       case !code:
       case !stock:
-        kill = true
+        throw new Error("Faltan parametros para crear Producto")
     }
-    if (kill) throw new Error("Faltan parametros para crear Producto")
     // check de id para cuando se "crean" productos leidos
     if (id) {
       this.#id = id
