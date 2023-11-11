@@ -1,10 +1,9 @@
 import { notNull } from "./lib.js"
+import { randomUUID } from "node:crypto"
 
 export default class Product {
   // Clase contenedora de la informacion de los productos.
 
-  // Variable estatica privada para llevar la cuenta de las ids generadas
-  static #idCount = 0
   // Variables privadas atadas a la entidad
   #id // var que no se puede modificar
   #code // var que no se puede modificar
@@ -23,12 +22,10 @@ export default class Product {
     }
     if (kill) throw new Error("Faltan parametros para crear Producto")
     // check de id para cuando se "crean" productos leidos
-    id = Number(id)
-    if (!isNaN(id)) {
+    if (id) {
       this.#id = id
-      Product.#idCount = ++id 
     } else {
-      this.#id = Product.#idCount++ // declaro id y dsp incremento
+      this.#id = randomUUID()
     }
     this.title = notNull(title)
     this.description = description
