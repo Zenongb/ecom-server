@@ -30,7 +30,11 @@ export default class ProductManager {
   async getProductById(id) {
     const products = await this.#readProds()
     const prod = products.find(p => p.id === id)
-    if (!prod) throw new Error(`No se encontro producto con id ${id}`)
+    if (!prod) {
+      const errNoProd = new Error(`No se encontro producto con id ${id}`)
+      errNoProd.code = "ENOENT"
+      throw errNoProd
+    }
     return prod.toPOJO()
   }
 
