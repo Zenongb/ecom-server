@@ -7,12 +7,22 @@ export default class ProductManager {
   }
 
   async getProducts() {
-    const products = await this.#readProds()
+    let products
+    try {
+      products = await this.#readProds()
+    } catch (err) {
+      throw new Error("Error al buscar los productos", {cause: err})
+    }
     return products.map(p => p.toPOJO())
   }
 
   async addProduct(title, description, price, thumbnail, code, stock) {
-    const products = await this.#readProds()
+    let products
+    try {
+      products = await this.#readProds()
+    } catch (err) {
+      throw new Error("Error al buscar los productos", {cause: err})
+    }
     // check si ya existe un producto con el mismo code
     if (-1 < products.findIndex(i => i.code === code)) { // esta linea puede ser cara
       throw new Error(`ya existe un producto con el codigo ${code}`)
@@ -28,7 +38,12 @@ export default class ProductManager {
   }
 
   async getProductById(id) {
-    const products = await this.#readProds()
+    let products
+    try {
+      products = await this.#readProds()
+    } catch (err) {
+      throw new Error("Error al buscar los productos", {cause: err})
+    }
     const prod = products.find(p => p.id === id)
     if (!prod) {
       const errNoProd = new Error(`No se encontro producto con id ${id}`)
@@ -39,7 +54,12 @@ export default class ProductManager {
   }
 
   async updateProduct(update) {
-    const products = await this.#readProds()
+    let products
+    try {
+      products = await this.#readProds()
+    } catch (err) {
+      throw new Error("Error al buscar los productos", {cause: err})
+    }
     const prodIndex = products.findIndex(p => p.id === update.id)
     if (prodIndex < 0) throw new Error(`No se encontro producto con id ${update.id}`)
     delete update.id
@@ -60,7 +80,12 @@ export default class ProductManager {
   }
 
   async deleteProduct(id) {
-    let products = await this.#readProds()
+    let products
+    try {
+      products = await this.#readProds()
+    } catch (err) {
+      throw new Error("Error al buscar los productos", {cause: err})
+    }
     const index = products.findIndex(p => p.id === id)
     if (index === -1) throw new Error("No existe un producto con ese id")
     else if (index === products.lenght - 1) products.pop()
