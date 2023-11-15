@@ -1,4 +1,4 @@
-import { notNull } from "./lib.js"
+import { notNull } from "../lib.js"
 import { randomUUID } from "node:crypto"
 
 export default class Product {
