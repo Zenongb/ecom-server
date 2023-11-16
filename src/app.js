@@ -1,16 +1,19 @@
 import express from "express"
-import ProductManager from "./src/ProductManager.js"
-import { PRODUCTS_PATH } from "./src/utils/lib.js"
+
+// Routers import
+import { apiRouter } from "./routers/api.router.js"
 
 
 const PORT = 8080
 const app = express()
 
-const pm = new ProductManager(PRODUCTS_PATH)
 
 // app middleware
 app.use(express.urlencoded({extended: true}))
 app.use(express.json())
+
+// ROUTES
+app.use("/api", apiRouter)
 
 app.get("/", (_, res) => {
   console.log("request recieved")
