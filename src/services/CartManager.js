@@ -10,10 +10,12 @@ export default class CartManager {
   // TODOS:
   //  CREATE CART
   async addCart({products}) {
-    let products
     try {
-      products = this.#readCarts()
+      const carts = await this.#readCarts()
+      carts.push(new Cart({products}))
+      await this.#writeCarts(carts)
     } catch (err) {
+      console.log(err)
       throw new Error("Error al leer los carritos", {cause: err})
     }
   }
