@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node .",
     "dev": "nodemon -e 'js' .",
-    "gen": "node src/productGenerator.js"
+    "gen": "node src/utils/productGenerator.js"
   },
   "keywords": [],
   "author": "@zenongb",
