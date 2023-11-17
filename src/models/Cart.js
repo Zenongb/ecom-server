@@ -2,23 +2,26 @@ import { randomUUID } from "node:crypto"
 
 export default class Cart{
   #products
-  #cid
-  constructor({products, cid=undefined}) {
-    if (!cid) {
-      this.#cid = randomUUID()
+  #id
+  constructor({products, id=undefined}) {
+    if (!id) {
+      this.#id = randomUUID()
     } else {
-      this.#cid = cid
+      this.#id = id
     }
     // check si products tiene el formato especificado
-    if (!Array.isArray(products)) { // que products sea array
-      throw new Error("Productos no es array")
-    } 
-    this.#products = products.map(p => new CartProduct(p))
+    if (products === undefined || products === null) { // caso de que no se pase un products
+      this.#products = []
+    } else if (Array.isArray(products)) { // caso que products sea array
+      this.#products = products.map(p => new CartProduct(p))
+    } else { // Si productos no es array
+      throw new Error("Productos no tiene el formato especoficado")
+    }
   }
 
   // Getters y setters
-  get cid() {
-    return this.#cid
+  get id() {
+    return this.#id
   }
 
   get products() {
@@ -38,7 +41,7 @@ export default class Cart{
   toPOJO() {
     const POJOprods = this.#products.map(cp => cp.toPOJO())
     return {
-      cid: this.#cid,
+      id: this.#id,
       products: POJOprods
     }
   }

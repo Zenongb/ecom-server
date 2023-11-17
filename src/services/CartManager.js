@@ -1,5 +1,5 @@
 import fs from "node:fs/promises"
-import Cart from "../models/Cart"
+import Cart from "../models/Cart.js"
 
 export default class CartManager {
   #path
@@ -7,29 +7,76 @@ export default class CartManager {
     this.#path = path
   }
 
-  // TODOS:
   //  CREATE CART
   async addCart({products}) {
     try {
       const carts = await this.#readCarts()
-      carts.push(new Cart({products}))
+      // creamos el carrito y lo agregamos al array
+      const newCart = new Cart({products})
+      carts.push(newCart)
+      // guardamos el carrito
       await this.#writeCarts(carts)
+      // devolvemos el carrito para pasarle el id al cliente
+      return newCart.toPOJO()
     } catch (err) {
-      console.log(err)
-      throw new Error("Error al leer los carritos", {cause: err})
+      throw new Error("Error al intentar aniadir el carrito", {cause: err})
     }
   }
 
-  //  READ CART
+  //  READ CARTS
+  async getCarts() {
+    try {
+      const carts = await this.#readCarts()
+      return carts.map(c => c.toPOJO())
+    } catch (err){
+        throw new Error("Error al retribuir los carritos" , {cause: err}) 
+    }
+  }
+
+  async getCartById(cid) {
+    try {
+      const carts = await this.#readCarts()
+      // buscamos el carrito
+      const cart = carts.find(c => c.id === cid)
+      if (!cart) { // caso de que no exista el carrito
+        const noCartErr = new Error(`No existe carrito con id ${cid}`)
+        noCartErr.code = "ENOENT"
+        throw noCartErr
+      }
+      return cart.toPOJO()
+    } catch (err){
+        throw new Error("Error al retribuir los carritos" , {cause: err}) 
+    }
+  }
+
   //  UPDATE CART
+  async addProduct(cid, pid) {
+    try {
+      const carts = await this.#readCarts()
+      // buscamos el carrito
+      const cartIndex = carts.findIndex(c => c.id === cid)
+      // handleamos el caso de que no exista el carrito
+      if (cartIndex < 0) {
+        const noCartErr = new Error(`No existe carrito con id ${cid}`)
+        noCartErr.code = "ENOENT"
+        throw noCartErr
+      }
+      // aniadimos el producto
+      carts[cartIndex].addProduct(pid)
+      // guardamos los carritos
+      await this.#writeCarts(carts)
+    } catch (err) { // error handling
+      throw new Error("error al actualizar el carrito", {cause: err})
+    }
+  }
   //  DELETE CART
 
   async #writeCarts(newCarts) {
     try {
       const pojoCarts = newCarts.map(c => c.toPOJO())
-      await fs.writeFile(this.path, JSON.stringify(pojoCarts, null, 2), "utf-8")
+      await fs.writeFile(this.#path, JSON.stringify(pojoCarts, null, 2), "utf-8")
     } catch (err) {
-      throw new Error(`Error escribiendo en ${this.path}`, {cause: err})
+      throw new Error(`Error escribiendo en ${this.#path}`, {cause: err})
     }
   }
 

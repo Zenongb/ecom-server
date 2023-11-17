@@ -1,7 +1,7 @@
 import { Router } from "express"
-import ProductManager from "./src/ProductManager.js"
+import ProductManager from "../services/ProductManager.js"
 
-import { PRODUCTS_PATH } from "./src/utils/lib.js"
+import { PRODUCTS_PATH } from "../utils/lib.js"
 
 
 const pm = new ProductManager(PRODUCTS_PATH)
