@@ -1,6 +1,6 @@
 // script para generar productos randomizados para testeo
 import fs from "fs/promises"
-import ProductManager from "./ProductManager.js"
+import ProductManager from "../services/ProductManager.js"
 import { PRODUCTS_PATH } from "./lib.js"
 
 const AMT = 10
@@ -30,6 +30,8 @@ for (let i = 0; i < AMT; i++) {
     i * 5 + 1, // price
     "", // thumb
     `as3${i}`, // code
-    255 // stock
+    i % 3 === 0? false : true, // status
+    "cosa", // category
+    255, // stock
   )
 }

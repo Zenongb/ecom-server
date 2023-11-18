@@ -8,7 +8,7 @@ export default class CartManager {
   }
 
   //  CREATE CART
-  async addCart({products}) {
+  async addCart(products=undefined) {
     try {
       const carts = await this.#readCarts()
       // creamos el carrito y lo agregamos al array
@@ -39,13 +39,16 @@ export default class CartManager {
       // buscamos el carrito
       const cart = carts.find(c => c.id === cid)
       if (!cart) { // caso de que no exista el carrito
+        throw "ENOENT"
+      }
+      return cart.toPOJO()
+    } catch (err){
+      if (err === "ENOENT") {
         const noCartErr = new Error(`No existe carrito con id ${cid}`)
         noCartErr.code = "ENOENT"
         throw noCartErr
       }
-      return cart.toPOJO()
-    } catch (err){
-        throw new Error("Error al retribuir los carritos" , {cause: err}) 
+      throw new Error("Error al retribuir los carritos" , {cause: err}) 
     }
   }
 
@@ -62,6 +65,7 @@ export default class CartManager {
         throw noCartErr
       }
       // aniadimos el producto
+      // TODO: agregar funcionalidad para interpretar si pid es un array de pids
       carts[cartIndex].addProduct(pid)
       // guardamos los carritos
       await this.#writeCarts(carts)
@@ -69,7 +73,7 @@ export default class CartManager {
       throw new Error("error al actualizar el carrito", {cause: err})
     }
   }
-  //  DELETE CART
+  //  TODO: DELETE CART
 
   async #writeCarts(newCarts) {
     try {

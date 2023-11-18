@@ -9,7 +9,7 @@ export default class Product {
   #code // var que no se puede modificar
   #price  // var que no puede ser menor a 0
 
-  constructor({title, description, price, thumbnail, code, stock, id=undefined}) {
+  constructor({title, description, price, thumbnail, code, stock, category, status=true, id=undefined}) {
     // check de nullishness
     switch (true) {
       case !title:
@@ -17,7 +17,11 @@ export default class Product {
       case !price:
       case !code:
       case !stock:
-        throw new Error("Faltan parametros para crear Producto")
+      case !category:
+        // agregar code a error para facilitar el mansaje al cliente
+        const errMissingParams = new Error("Faltan parametros para crear Producto")
+        errMissingParams.code = "MISSINGPARAMS"
+        throw errMissingParams
     }
     // check de id para cuando se "crean" productos leidos
     if (id) {
@@ -31,6 +35,8 @@ export default class Product {
     this.thumbnail = thumbnail
     this.#code = notNull(code)
     this.stock = notNull(stock)
+    this.status = notNull(status)
+    this.category = notNull(category)
   }
 
   set price(newPrice) {
@@ -62,7 +68,9 @@ export default class Product {
       price: this.price,
       thumbnail: this.thumbnail,
       code: this.code,
-      stock: this.stock
+      stock: this.stock,
+      status: this.status,
+      category: this.category
     }
   }
 }
