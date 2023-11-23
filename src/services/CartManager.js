@@ -39,11 +39,12 @@ export default class CartManager {
       // buscamos el carrito
       const cart = carts.find(c => c.id === cid)
       if (!cart) { // caso de que no exista el carrito
-        throw "ENOENT"
+        throw new Error("ENOENT") // un workaround para agarrar el error
       }
       return cart.toPOJO()
     } catch (err){
-      if (err === "ENOENT") {
+      if (err.message === "ENOENT") { // handle ENOENT
+        // tiramos el error apropiadamente
         const noCartErr = new Error(`No existe carrito con id ${cid}`)
         noCartErr.code = "ENOENT"
         throw noCartErr
