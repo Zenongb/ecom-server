@@ -1,0 +1,34 @@
+<h1>Productos en tiempo real</h1>
+<div id="main-block">
+  <div id="display">
+    <table>
+    </table>
+  </div>
+  <div id="editor">
+    <form id="addProduct" action="addProduct">
+      <label for="title">title:<input type="text" name="title" /></label>
+      <label for="description">description:<input
+          type="text"
+          name="description"
+        /></label>
+      <label for="price">price:<input
+          type="number"
+          name="price"
+          id="price"
+        /></label>
+      <label for="code">code: <input type="text" name="code" /></label>
+      <label for="status">status:
+        <input type="checkbox" name="status" id="status" /></label>
+      <label for="category">category:
+        <input type="text" name="category" id="category" /></label>
+      <label for="stock">stock:<input
+          type="number"
+          name="stock"
+          id="stock"
+        /></label>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script type="module" src="/static/js/realtimeProducts.client.js"></script>

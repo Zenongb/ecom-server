@@ -8,6 +8,7 @@ export default class Product {
   #id // var que no se puede modificar
   #code // var que no se puede modificar
   #price  // var que no puede ser menor a 0
+  #stock
 
   constructor({title, description, price, thumbnail, code, stock, category, status=true, id=undefined}) {
     // check de nullishness
@@ -57,6 +58,17 @@ export default class Product {
 
   get code() {
     return this.#code
+  }
+
+  set stock(newStock) {
+    newStock = Number(newStock)
+    // check si es num 
+    if (isNaN(newStock)) throw new Error("El nuevo precio no es un numero")
+    this.#stock = newStock
+  }
+
+  get stock() {
+    return this.#stock
   }
 
   toPOJO() {

@@ -6,12 +6,13 @@ import {
   postController,
   putController,
 } from "../controllers/products.controller.js"
+import { wsUpdatedProductsPropagation } from "../middlewares/updatedProducts.middleware.js"
 
 
 export const productsRouter = Router()
 
 // CREATE
-productsRouter.post("/", postController)
+productsRouter.post("/", wsUpdatedProductsPropagation, postController)
 
 // READ MULTI
 productsRouter.get("/", getController)
@@ -20,7 +21,7 @@ productsRouter.get("/", getController)
 productsRouter.get("/:pid", getByIdController)
 
 // UPDATE SINGLE
-productsRouter.put("/:pid", putController)
+productsRouter.put("/:pid", wsUpdatedProductsPropagation, putController)
 
 // DELETE
-productsRouter.delete("/:pid", deleteController)
+productsRouter.delete("/:pid", wsUpdatedProductsPropagation, deleteController)

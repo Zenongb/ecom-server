@@ -118,3 +118,18 @@ export const deleteController = async (req, res) => {
     })   
   }
 }
+
+// WEBSOCKETS CONTROLLERS
+// Estos van aca? pensé en hacer una carpeta separada llamada sockets,
+// pero realmente no se como estructurarlo
+
+import { wsServer } from "../app.js";
+
+export const connectionSocket = async socket => {
+  socket.emit("updateProducts", await pm.getProducts())
+}
+
+// SERVER SOCKETS
+export const serverEmitUpdateProducts = async () => {
+  wsServer.emit("updateProducts", await pm.getProducts())
+}

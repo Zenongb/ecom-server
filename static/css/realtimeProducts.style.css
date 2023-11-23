@@ -1,0 +1,19 @@
+#main-block {
+    display: flex;
+    justify-content: space-between;
+}
+
+#display {
+    width: 80%;
+}
+#editor {
+    width: 18%;
+}
+
+#addProduct {
+    display: flex;
+    flex-direction: column;
+}
+#addProduct > label {
+    margin: 0.2em;
+}
