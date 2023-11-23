@@ -57,7 +57,7 @@ export const postController = async (req, res) => {
   } catch (err) {
     console.log(err)
     if (err.code === "MISSINGPARAMS") {
-      return res.status(402).json({
+      return res.status(400).json({
       status: "Failed",
       message: "Missing parameters"
     })
