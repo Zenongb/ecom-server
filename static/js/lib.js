@@ -1,12 +1,9 @@
 export const updateTable = products => {
-  const table = document.querySelector("table");
+  const table = document.getElementById("table");
   table.innerHTML = "";
   // make table first row
   const keys = Object.keys(products[0]);
   const upperRow = document.createElement("tr");
-  const firstTd = document.createElement("td");
-  firstTd.innerHTML = "&nbsp;";
-  upperRow.appendChild(firstTd);
   for (let pks of keys) {
     if (pks === "thumbnail") continue; // saltarse las thumbnails
     const td = document.createElement("td");
@@ -17,9 +14,6 @@ export const updateTable = products => {
 
   // delcaracion de funcion de utilidad para updateTable
   const fillRow = (tr, prodIndex) => {
-    const firstTd = document.createElement("td");
-    firstTd.innerHTML = prodIndex;
-    tr.appendChild(firstTd);
     for (let k of keys) {
       if (k === "thumbnail") continue; // saltarse las thumbnails
       const td = document.createElement("td");
