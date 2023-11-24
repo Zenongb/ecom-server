@@ -1,7 +1,7 @@
 <h1>Productos en tiempo real</h1>
 <div id="main-block">
   <div id="display">
-    <table>
+    <table id="table">
     </table>
   </div>
   <div id="editor">
@@ -27,6 +27,10 @@
           id="stock"
         /></label>
       <button type="submit">Enviar</button>
+    </form>
+    <form id="deleteProduct" action="deleteProduct">
+      <label for="id">id: <input type="text" name="pid" id="pid"></label>
+      <button type="submit">Borrar</button>
     </form>
   </div>
 </div>
