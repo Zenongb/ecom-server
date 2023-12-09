@@ -2,6 +2,10 @@ import express from "express"
 import handlebars from "express-handlebars"
 import { Server } from "socket.io"
 
+import mongoose from "mongoose"
+
+import { DB_URL, PORT } from "./config.js"
+
 // Routers import
 import { webRouter } from "./routers/web.router.js"
 import { apiRouter } from "./routers/api.router.js"
@@ -9,8 +13,8 @@ import { apiRouter } from "./routers/api.router.js"
 import { connectionSocket } from "./controllers/products.controller.js"
 
 
-const PORT = 8080
 const app = express()
+mongoose.connect(DB_URL)
 
 // handlebars engine
 app.engine("handlebars", handlebars.engine())
@@ -41,4 +45,13 @@ app.use("/api", apiRouter)
 
 app.use("/", webRouter)
 
-
+// Realizamos un graceful shutdown del sistema
+process.on('SIGTERM', () => {
+  console.log('Cerrando Servidor.')
+  // cerramos la conexion a la db
+  mongoose.connection.close()
+  // cerramos el servidor
+  httpServer.close(() => {
+    console.log('HTTP server closed')
+  })
+})
