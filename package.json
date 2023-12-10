@@ -5,8 +5,8 @@
   "main": "src/app.js",
   "type": "module",
   "scripts": {
-    "start": ". ./.env && node .",
-    "dev": ". ./.env && nodemon -e 'js' .",
+    "start": "node .",
+    "dev": "nodemon -e 'js' .",
     "gen": "node src/utils/productGenerator.js"
   },
   "keywords": [],
