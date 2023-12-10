@@ -7,20 +7,27 @@ export const CARTS_PATH = "./data/carts.json"; // cambiar a path absolutoexport 
 export const PORT = 8080
 
 // generacion de la database URI 
-let dbUri 
-let dbUser 
-let dbPwd 
+let userAuth
+let dbUri
 const database = "ecommerce"
-
 // check si exiten variables de amibente para vincular la db y protejer 
 // secretos como user y pwd
-if (process.env.ECOM_DB_URI && process.env.ECOM_DB_USER && process.env.ECOM_DB_PWD) {
+if (process.env.ECOM_DB_URI) {
+  console.log("Recolectando variables de ambiente para conexion con la database")
+  // agarramos el URI
   dbUri = process.env.ECOM_DB_URI
-  dbUser = process.env.ECOM_DB_USER
-  dbPwd = process.env.ECOM_DB_PWD
+  // Procesamos user y pwd
+  if (process.env.ECOM_DB_USER && process.env.ECOM_DB_PWD) {
+    // se pasa username y pwd de la database
+    console.log("Username y password reconocidos")
+    userAuth = `${process.env.ECOM_DB_USER}:${process.env.ECOM_DB_PWD}@`
+  } else {
+    // no se pasa nada
+    userAuth = ""
+  }
 } else {
-  throw new Error("Missing environment variables for database connection")
+  throw new Error("Missing URI for database connection")
 }
 
 // DATABASE URI
-export const DB_URL = `mongodb+srv://${dbUser}:${dbPwd}@${dbUri}/${database}?retryWrites=true&w=majority`
+export const DB_URL = `mongodb+srv://${userAuth}${dbUri}/${database}?retryWrites=true&w=majority`
