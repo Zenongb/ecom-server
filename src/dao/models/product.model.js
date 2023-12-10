@@ -125,10 +125,10 @@ async function addProduct({
   }
 }
 
-async function updateProduct(pid, update) {
+async function updateProduct(update) {
   try {
     const updatedProduct = await this.findOneAndUpdate(
-      { _id: pid },
+      { _id: update.id },
       {
         $set: {
           ...update,
@@ -140,7 +140,8 @@ async function updateProduct(pid, update) {
     );
     return updatedProduct;
   } catch (err) {
-    throw new Error(`Error al actualizar Producto ${products[prodIndex].id}`, {
+    // TODO: handlear err.name=StrictModeError y demas (ENOENT, etc)
+    throw new Error(`Error al actualizar Producto ${update.id}`, {
       cause: err,
     });
   }
