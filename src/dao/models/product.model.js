@@ -125,12 +125,13 @@ async function addProduct({
   }
 }
 
-async function updateProduct(update) {
+async function updateProduct(pid, update) {
   try {
-    console.log("update is", update)
+    console.log("update is")
+    console.log(update)
     delete update.id
     const updatedProduct = await this.findOneAndUpdate(
-      { _id: update.id },
+      { _id: pid },
       {
         $set: {
           ...update,
@@ -142,12 +143,8 @@ async function updateProduct(update) {
     );
     return updatedProduct;
   } catch (err) {
-<<<<<<< HEAD
     // TODO: handlear err.name=StrictModeError y demas (ENOENT, etc)
     throw new Error(`Error al actualizar Producto ${update.id}`, {
-=======
-    throw new Error("Error al actualizar Producto", {
->>>>>>> chat-implementation
       cause: err,
     });
   }
