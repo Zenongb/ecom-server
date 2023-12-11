@@ -16,3 +16,11 @@ webRouter.get("/realtimeProducts", (_, res) => {
         styles: "/static/css/realtimeProducts.style.css"
     })
 })
+
+webRouter.get("/messager", (_, res) => {
+    res.render("messager.handlebars", {
+        title: "Chat",
+        styles: "/static/css/messager.style.css"
+    })
+})
+

@@ -3,11 +3,14 @@ import { updateTable } from "./lib.js";
 // Websockets handling
 const socket = io();
 
-socket.on("connect", () => {
+socket.on("connect", async () => {
   console.log("conectado");
+  await socket.emit("join", "realtimeProducts")
+  socket.emit("joinedRoom")
 });
 
-socket.on("updateProducts", products => {
+socket.on("updatedProducts", products => {
+  console.log("products updated")
   updateTable(products);
 });
 

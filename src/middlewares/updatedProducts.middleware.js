@@ -1,4 +1,4 @@
-import { serverEmitUpdateProducts } from "../controllers/products.controller.js";
+import { serverEmitUpdateProducts } from "../sockets/products.socket.js";
 
 // como podria llamar este archivo?
 

@@ -1,6 +1,6 @@
 import ProductManager from "../dao/models/product.model.js";
 
-const pm = ProductManager
+const pm = ProductManager;
 
 export const getController = async (req, res) => {
   let limit = req.query.limit;
@@ -74,9 +74,8 @@ export const putController = async (req, res) => {
   const updates = req.body;
   console.log(`Updates are ${updates}`);
   try {
-    await pm.updateProduct({
+    await pm.updateProduct(pid, {
       ...updates,
-      id: pid,
     });
     res.status(200).json({
       status: "Success",
@@ -116,19 +115,4 @@ export const deleteController = async (req, res) => {
       message: "Internal server error",
     });
   }
-};
-
-// WEBSOCKETS CONTROLLERS
-// Estos van aca? pensé en hacer una carpeta separada llamada sockets,
-// pero realmente no se como estructurarlo
-
-import { wsServer } from "../app.js";
-
-export const connectionSocket = async socket => {
-  socket.emit("updateProducts", await pm.getProducts());
-};
-
-// SERVER SOCKETS
-export const serverEmitUpdateProducts = async () => {
-  wsServer.emit("updateProducts", await pm.getProducts());
 };

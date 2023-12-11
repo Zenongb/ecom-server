@@ -127,6 +127,8 @@ async function addProduct({
 
 async function updateProduct(pid, update) {
   try {
+    console.log("update is", update)
+    delete update.id
     const updatedProduct = await this.findOneAndUpdate(
       { _id: pid },
       {
@@ -140,7 +142,7 @@ async function updateProduct(pid, update) {
     );
     return updatedProduct;
   } catch (err) {
-    throw new Error(`Error al actualizar Producto ${products[prodIndex].id}`, {
+    throw new Error("Error al actualizar Producto", {
       cause: err,
     });
   }
