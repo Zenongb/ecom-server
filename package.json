@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node .",
-    "dev": "nodemon -e 'js' .",
+    "dev": "nodemon --signal SIGTERM -e 'js' .",
     "gen": "node src/utils/productGenerator.js"
   },
   "keywords": [],
