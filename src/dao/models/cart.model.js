@@ -1,4 +1,4 @@
-import {randomUUID} from "crypto"
+import { randomUUID } from "crypto";
 import mongoose from "mongoose";
 
 const cartCollection = "carts";
@@ -34,7 +34,7 @@ const cartSchema = new mongoose.Schema(
   {
     _id: {
       type: String,
-      default: randomUUID
+      default: randomUUID,
     },
     products: {
       type: [productInstance],
@@ -49,9 +49,11 @@ const cartSchema = new mongoose.Schema(
     // METODOS ESTATICOS
     statics: {
       addCart,
-      addProduct,
+      updateProduct,
       removeProduct,
       getCartById,
+      bulkUpdateProducts,
+      removeAllProducts
     },
   }
 );
@@ -73,33 +75,13 @@ async function addCart(products = undefined) {
 }
 
 // ADD PROD
-async function addProduct(cid, pid) {
+async function updateProduct(cid, pid, amt) {
   try {
     // quiero poder enviar un solo pedido a la db y que esta se ocupe de la logica de
     // crear una entrada del objeto o actualizar un objeto.
-    const updateResult = await this.bulkWrite([
-      {
-        updateOne: {
-          // caso en el que exista el producto en el array
-          filter: { _id: cid, "products.pid": pid },
-          update: {
-            // TODO: cambiar a una operacion idempotente
-            $inc: { "products.$.quantity": 1 },
-          },
-        },
-      },
-      {
-        updateOne: {
-          // caso en el que no existe el objeto que contiene el pid
-          filter: { _id: cid, "products.pid": { $ne: pid } },
-          update: {
-            $push: {
-              products: { pid: pid, quantity: 1 },
-            },
-          },
-        },
-      },
-    ]);
+    const updateResult = await this.updateOne({_id: cid, "products.pid": pid},{
+      $set: {"products.$.quantity": amt}
+    });
     console.log("update result is:", updateResult);
     // checkeamos los resultados del update
     if (updateResult.matchedCount === 0) {
@@ -126,33 +108,7 @@ async function addProduct(cid, pid) {
 // DELETE PROD
 async function removeProduct(cid, pid) {
   try {
-    // quiero poder enviar un solo pedido a la db y que esta se ocupe de la logica de
-    // crear una entrada del objeto o actualizar un objeto.
-    const updRes = await this.bulkWrite([
-      {
-        updateOne: {
-          // caso en el que el producto tenga un elemento (delete)
-          filter: {
-            _id: cid,
-            // usamos elemMatch para asegurar de que amobos campos existan
-            products: { $elemMatch: { pid: pid, quantity: 1 } },
-          },
-          update: {
-            $pull: { products: { pid: pid } },
-          },
-        },
-      },
-      {
-        updateOne: {
-          // caso de que el elemento tenga mas de una unidad del producto
-          filter: { _id: cid, "products.pid": pid },
-          update: {
-            // TODO: cambiar a una operacion idempotente
-            $inc: { "products.$.quantity": -1 },
-          },
-        },
-      },
-    ]);
+    const updRes = await this.updateOne({ _id: cid}, {$pull: {pid: pid}})
     console.log("update result is:", updRes);
     // checkeamos los resultados del update
     if (updRes.matchedCount === 0) {
@@ -203,6 +159,66 @@ async function getCartById(cid) {
       throw wrongIdErr;
     }
     throw new Error("Error al retribuir los carritos", { cause: err });
+  }
+}
+
+async function bulkUpdateProducts(cid, pids) {
+  // KNOWN BUG: si el carrito ya tiene productos y se repiete alguna de las pids
+  // la operacion va a generar una nueva instancia del producto en el carrito.
+  // Tambien esta operacion no es idempotente, ya que no tengo forma de checkear
+  // la unicidad de la operacion
+  try {
+  // transformar el array de pids(String) en objects
+    const parsedPids = [];
+    for (let pid of pids) {
+      const prodIdx = parsedPids.findIndex(p => p.pid === pid);
+      if (prodIdx < 0) {
+        parsedPids.push({ pid: pid, quantity: 1 });
+      } else {
+        parsedPids[prodIdx].quantity++;
+      }
+    }
+    const updateRes = await this.updateOne(
+      { _id: cid },
+      { $push: { products: { $each: parsedPids } } }
+    );
+    console.log("in manager");
+    console.log(updateRes);
+    return updateRes
+  } catch (err) {
+    if (err.name === "CastError") {
+      const errBadReq = new Error("Array de productos malformado");
+      errBadReq.code = "BADREQUEST";
+      throw errBadReq;
+    }
+    throw new Error("Error al intentar hacer bulk update", { cause: err });
+  }
+}
+
+async function removeAllProducts (cid) {
+  try {
+    const updRes = await this.updateOne({_id: cid}, {
+      $set: { products: [] }
+    })
+    console.log(updRes)
+    if (updRes.matchedCount === 0) {
+      throw new Error("ENOENT");
+    }
+  } catch (err) {
+    // error handling
+    if (err.message === "ENOENT") {
+      // handle ENOENT
+      // tiramos el error apropiadamente
+      const noCartErr = new Error(`No existe carrito con id ${cid}`);
+      noCartErr.code = "ENOENT";
+      throw noCartErr;
+    } else if (err.name === "CastError") {
+      // Handle mongo error cuando el id recibido no puede ser casteado a ObjectId
+      const wrongIdErr = new Error(`${cid} no es Id`);
+      wrongIdErr.code = "EWRONGID";
+      throw wrongIdErr;
+    }
+    throw new Error("error al borrar todos los productos")
   }
 }
 

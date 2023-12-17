@@ -2,9 +2,11 @@ import { Router } from "express";
 
 import {
   getByIdController,
-  postController,
-  addProductController,
+  createCartController,
+  updateProductController,
   removeProductController,
+  bulkUpdateController,
+  removeAllProductsController,
 } from "../controllers/carts.controller.js";
 
 export const cartsRouter = Router();
@@ -13,10 +15,14 @@ export const cartsRouter = Router();
 cartsRouter.get("/:cid", getByIdController);
 
 // CREATE CART
-cartsRouter.post("/", postController);
+cartsRouter.post("/", createCartController);
 
 // UPDATE CART
-// ADD PRODUCT
-cartsRouter.put("/:cid/products/:pid", addProductController);
+// UPDATE PRODUCT
+cartsRouter.put("/:cid/products/:pid", updateProductController);
+// ADD MULTIPLE PRODUCTS
+cartsRouter.put("/:cid", bulkUpdateController)
 // REMOVE PRODUCT
 cartsRouter.delete("/:cid/products/:pid", removeProductController);
+// REMOVE ALL PRODUCTS
+cartsRouter.delete("/:cid/products", removeAllProductsController);

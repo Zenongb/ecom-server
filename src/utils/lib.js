@@ -4,3 +4,7 @@ export const notNull = (attrib) => {
   return attrib
 }
 
+export const localParseInt = (numStr, defaultValue) => {
+    numStr = numStr === "" || numStr === " " ? NaN : Number(numStr); // check de empty string
+    return Number.isNaN(numStr) ? defaultValue : numStr;
+}
