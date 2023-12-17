@@ -3,10 +3,10 @@ import { Router } from "express";
 
 export const webRouter = Router()
 
-webRouter.get("/", (_, res) => {
-    res.render("home.handlebars", {
+webRouter.get("/products", (_, res) => {
+    res.render("products.handlebars", {
         title: "Productos",
-        styles: "/static/css/home.style.css"
+        styles: "/static/css/products.style.css"
     })
 })
 

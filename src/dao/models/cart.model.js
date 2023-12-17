@@ -183,7 +183,7 @@ async function getCartById(cid) {
       _id: 1,
       "products.pid": 1,
       "products.quantity": 1,
-    });
+    }).populate("products.pid");
     if (!cart) {
       // caso de que no exista el carrito
       throw new Error("ENOENT"); // un workaround para agarrar el error

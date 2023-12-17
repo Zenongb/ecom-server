@@ -1,5 +1,6 @@
-import {randomUUID} from "crypto";
+import { randomUUID } from "crypto";
 import mongoose from "mongoose";
+import { PRODUCTS_PER_PAGE } from "../../config.js";
 
 const productCollection = "products";
 
@@ -70,10 +71,43 @@ const productSchema = new mongoose.Schema(
 //////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////
 
-async function getProducts(limit = undefined) {
+async function getProducts(query, page, sort, limit = PRODUCTS_PER_PAGE) {
+  // parseamos el query para pasarselo al driver
   try {
-    const products = await this.find({}, null, { limit: limit });
-    return products;
+    const paginationPipeline = []
+    const searchQuery = {};
+    if (query?.available) {
+      searchQuery.stock = { $gt: 0 };
+    }
+    if (query?.category) {
+      searchQuery.category = query.category;
+    }
+    paginationPipeline.push({$match: searchQuery})
+    if (sort) {
+    // hacemos lo mismo con la sort query
+    const sortQuery = {};
+    if (sort === "asc") {
+      sortQuery.price = 1;
+    } else if (sort === "desc") {
+      sortQuery.price = -1;
+    }
+    paginationPipeline.push({$sort: sortQuery})
+    }
+    // agregamos skip y limit
+    paginationPipeline.push({$skip: page * limit},{$limit: limit})
+    const aggrRes = await this.aggregate([{
+      // para poder conseguir el num de paginas al mismo tiempo de conseguir los
+      // resultados usamos una agrregation pipeline con el stage $facet para hacer
+      // multiples agregaciones en un solo stage
+      $facet: {
+        paginatedProducts: paginationPipeline,
+        totalCount: [
+          // sumamos los resultados
+          {$match: searchQuery},
+          {$count: 'totalCount'}
+        ]
+      }}])
+    return aggrRes;
   } catch (err) {
     throw new Error("Error al buscar los productos", { cause: err });
   }

@@ -4,6 +4,9 @@ export const PRODUCTS_PATH = "./data/products.json"; // cambiar a path absoluto
 // variable de path de carrito
 export const CARTS_PATH = "./data/carts.json"; // cambiar a path absolutoexport const PORT = 8080
 
+// Variable de cantidad de productos por pagina
+export const PRODUCTS_PER_PAGE = 10
+
 export const PORT = 8080
 
 // generacion de la database URI 

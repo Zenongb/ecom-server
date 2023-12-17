@@ -1,0 +1,23 @@
+<h1>Productos</h1>
+<form id="filterList">
+  <label for="category">Categoria</label>
+  <input type="text" name="category" id="category" />
+  <label for="available">Disponible</label>
+  <input type="checkbox" name="available" id="available" value="true" />
+  <label for="sortByPrice">Ordenar por precio:</label>
+  <select name="sortByPrice" id="sortByPrice">
+    <option value="">Elegir opcion</option>
+    <option value="asc">Más baratos</option>
+    <option value="desc">Más caros</option>
+  </select>
+  <button type="submit">Filtrar</button>
+</form>
+<div id="display">
+  <table id="table">
+  </table>
+  <div id="page-nav">
+    <button type="button" id="prev">Anterior</button>
+    <p id="page-display"></p>
+    <button type="button" id="next">Siguiente</button></div>
+</div>
+<script type="module" src="/static/js/products.client.js"></script>

@@ -25,8 +25,7 @@ addProdForm.addEventListener("submit", event => {
       const value = formChild.lastChild.value;
       prodSubmit[key] = value;
       if (key === "status") {
-        console.log(key, value);
-        prodSubmit[key] = value === "on";
+        prodSubmit[key] = formChild.lastChild.checked
         console.log(prodSubmit[key]);
       }
     }

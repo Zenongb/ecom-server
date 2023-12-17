@@ -1,15 +1,66 @@
+import { PRODUCTS_PER_PAGE } from "../config.js";
 import ProductManager from "../dao/models/product.model.js";
 
-const pm = ProductManager
+const pm = ProductManager;
 
 export const getController = async (req, res) => {
-  let limit = req.query.limit;
-  limit = limit === "" ? NaN : Number(limit);
-  console.log(`Searching for ${limit} products`);
   try {
-    limit = limit === NaN ? undefined : limit;
-    let products = await pm.getProducts(limit);
-    return res.status(200).json(products);
+    let limit = req.query.limit;
+    // Parseamos limit
+    limit = limit === "" || limit === " " ? NaN : Number(limit); // check de empty string
+    limit = Number.isNaN(limit) ? PRODUCTS_PER_PAGE : limit;
+    let sort = req.query.sort;
+    // Parseamos page
+    let page = req.query.page;
+    page = page === "" || page === " " ? NaN : Number(page); // check de empty string
+    page = Number.isNaN(page) ? 0 : page;
+    // Parseamos query
+    const query = req.query.query;
+    const searchQuery = {};
+    if (query) {
+      const queryArr = query.split("-");
+      for (let kv of queryArr) {
+        if (kv === "") continue; // evitamos el caso en que no exista una query
+        const [key, value] = kv.split(":");
+        if (value !== undefined) searchQuery[key] = value;
+      }
+    }
+    // Parseamos available
+    if (searchQuery.available) {
+      searchQuery.available = searchQuery.available === "true"? true : false;
+    }
+    const [{ paginatedProducts, totalCount }] = await pm.getProducts(
+      searchQuery,
+      page,
+      sort,
+      limit
+    );
+    // calculamos las pages
+    const totalPages = Math.ceil(totalCount[0].totalCount / limit);
+    const prevPage = page - 1 >= 0 ? page - 1 : null;
+    const nextPage = page + 1 < totalPages ? page + 1 : null;
+    const setUri = page => {
+      // funcion de utilidad para resolver la logica de sumar page a querys
+      const queryParams = new URLSearchParams({
+        limit: limit,
+        query: query,
+        sort: sort,
+        page: page,
+      });
+      return page === null ? null : "/api/products?" + queryParams;
+    };
+    return res.status(200).json({
+      status: "Success",
+      payload: paginatedProducts,
+      totalPages: totalPages,
+      prevPage: prevPage,
+      nextPage: nextPage,
+      page: page,
+      hasPrevPage: prevPage === null ? false : true,
+      hasNextPage: nextPage === null ? false : true,
+      nextLink: setUri(nextPage),
+      prevLink: setUri(prevPage),
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send("Error al buscar los productos");
@@ -123,6 +174,7 @@ export const deleteController = async (req, res) => {
 // pero realmente no se como estructurarlo
 
 import { wsServer } from "../app.js";
+import { PRODUCTS_PATH } from "../config.js";
 
 export const connectionSocket = async socket => {
   socket.emit("updateProducts", await pm.getProducts());
