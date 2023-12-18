@@ -53,7 +53,7 @@ const cartSchema = new mongoose.Schema(
       removeProduct,
       getCartById,
       bulkUpdateProducts,
-      removeAllProducts
+      removeAllProducts,
     },
   }
 );
@@ -79,9 +79,12 @@ async function updateProduct(cid, pid, amt) {
   try {
     // quiero poder enviar un solo pedido a la db y que esta se ocupe de la logica de
     // crear una entrada del objeto o actualizar un objeto.
-    const updateResult = await this.updateOne({_id: cid, "products.pid": pid},{
-      $set: {"products.$.quantity": amt}
-    });
+    const updateResult = await this.updateOne(
+      { _id: cid, "products.pid": pid },
+      {
+        $set: { "products.$.quantity": amt },
+      }
+    );
     console.log("update result is:", updateResult);
     // checkeamos los resultados del update
     if (updateResult.matchedCount === 0) {
@@ -108,7 +111,7 @@ async function updateProduct(cid, pid, amt) {
 // DELETE PROD
 async function removeProduct(cid, pid) {
   try {
-    const updRes = await this.updateOne({ _id: cid}, {$pull: {pid: pid}})
+    const updRes = await this.updateOne({ _id: cid }, { $pull: { pid: pid } });
     console.log("update result is:", updRes);
     // checkeamos los resultados del update
     if (updRes.matchedCount === 0) {
@@ -168,7 +171,7 @@ async function bulkUpdateProducts(cid, pids) {
   // Tambien esta operacion no es idempotente, ya que no tengo forma de checkear
   // la unicidad de la operacion
   try {
-  // transformar el array de pids(String) en objects
+    // transformar el array de pids(String) en objects
     const parsedPids = [];
     for (let pid of pids) {
       const prodIdx = parsedPids.findIndex(p => p.pid === pid);
@@ -184,7 +187,7 @@ async function bulkUpdateProducts(cid, pids) {
     );
     console.log("in manager");
     console.log(updateRes);
-    return updateRes
+    return updateRes;
   } catch (err) {
     if (err.name === "CastError") {
       const errBadReq = new Error("Array de productos malformado");
@@ -195,12 +198,15 @@ async function bulkUpdateProducts(cid, pids) {
   }
 }
 
-async function removeAllProducts (cid) {
+async function removeAllProducts(cid) {
   try {
-    const updRes = await this.updateOne({_id: cid}, {
-      $set: { products: [] }
-    })
-    console.log(updRes)
+    const updRes = await this.updateOne(
+      { _id: cid },
+      {
+        $set: { products: [] },
+      }
+    );
+    console.log(updRes);
     if (updRes.matchedCount === 0) {
       throw new Error("ENOENT");
     }
@@ -218,7 +224,7 @@ async function removeAllProducts (cid) {
       wrongIdErr.code = "EWRONGID";
       throw wrongIdErr;
     }
-    throw new Error("error al borrar todos los productos")
+    throw new Error("error al borrar todos los productos");
   }
 }
 
