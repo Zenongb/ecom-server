@@ -10,6 +10,17 @@ webRouter.get("/products", (_, res) => {
     })
 })
 
+
+webRouter.get("/carts/:cid", (req, res) => {
+    const cid = req.params.cid
+    res.render("cart.handlebars", {
+        title: "Visualizador de Carrito",
+        styles: "/static/css/carts.style.css",
+        cid: cid
+    })
+})
+
+
 webRouter.get("/realtimeProducts", (_, res) => {
     res.render("realtimeProducts.handlebars", {
         title: "Realtime Products",

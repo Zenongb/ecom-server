@@ -11,36 +11,19 @@ const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
 const pageDisplay = document.getElementById("page-display");
 
-filterForm.addEventListener("submit", event => {
-  event.preventDefault();
-  console.log("existo");
-  let uri =
-    "/api/products?" +
-    new URLSearchParams({
-      page: 1, // pedimos la primera pagina de la busqueda
-      limit: 5, //tiramos un limit
-      query: `available:${availFilter.checked}-category:${catFilter.value}`,
-      sort: priceFilter?.value,
-    });
-  console.log(uri);
-  fetchProducts(uri);
-});
-
-const cartRes = await fetch("api/carts", {
-  method: "POST",
-  "Content-Type": "application/json",
-})
-  .then(res => res.json())
-  .catch(err => console.log(err));
-
-const cid = cartRes.payload.cid
-
 const addToCart = async pid => {
-  const putRes = await fetch(`/api/carts/${cid}/products/${pid}`, {
+  let cartProd = cart.products.find(p => p.pid === pid);
+  const putRes = await fetch(`/api/carts/${cart._id}/products/${pid}`, {
     method: "PUT",
-    "Content-Type": "application/json",
-  }).then(res => res.json()).catch(err => console.log(err));
-  console.log(putRes)
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: (cartProd?.quantity ?? 0) + 1,
+  })
+    .then(res => res.json())
+    .catch(err => console.log(err));
+  cart = putRes.payload
+  console.log(cart)
 };
 
 // abort controllers para eliminar los event listeners para la page nav
@@ -92,7 +75,9 @@ const updatePageNav = prodRes => {
 const fetchProducts = uri => {
   fetch(uri, {
     method: "GET",
-    "Content-Type": "application/json",
+    headers: {
+      "Content-Type": "application/json",
+    },
   })
     .then(res => {
       return res.json();
@@ -107,5 +92,40 @@ const fetchProducts = uri => {
     });
 };
 
+// EVENT DECLARATIONS
+// go to cart event
+document.getElementById("goToCartPage").addEventListener("click", () => {
+  window.location.href = `/carts/${cart._id}`;
+});
+// form event
+filterForm.addEventListener("submit", event => {
+  event.preventDefault();
+  console.log("existo");
+  let uri =
+    "/api/products?" +
+    new URLSearchParams({
+      page: 1, // pedimos la primera pagina de la busqueda
+      limit: 5, //tiramos un limit
+      query: `available:${availFilter.checked}-category:${catFilter.value}`,
+      sort: priceFilter?.value,
+    });
+  console.log(uri);
+  fetchProducts(uri);
+});
 
+// MAIN EXECUTION
+
+// create cart
+const cartRes = await fetch("api/carts", {
+  method: "POST",
+  "Content-Type": "application/json",
+})
+  .then(res => res.json())
+  .catch(err => console.log(err));
+
+// variable global de carrito
+var cart = cartRes.payload;
+console.log("cart", cart);
+
+// primer fetch
 fetchProducts("api/products?query=&sort=");

@@ -22,7 +22,9 @@ app.set("views", "./views")
 
 // standard app middleware
 app.use(express.urlencoded({extended: true}))
-app.use(express.json())
+// le cambio el campo strict al middle de json para poder paersear los
+// integers recibidos para el update de products
+app.use(express.json({strict: false})) 
 
 // instanciar el servidor http
 const httpServer = app.listen(PORT, () => {

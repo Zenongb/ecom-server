@@ -10,7 +10,7 @@ export const getByIdController = async (req, res) => {
     const cart = await cm.getCartById(cid);
     // y lo devolvemos
     return res.status(200).json({
-      satus: "Success",
+      satus: "success",
       payload: cart,
     });
   } catch (err) {
@@ -18,18 +18,18 @@ export const getByIdController = async (req, res) => {
     // handle not found error
     if (err.code === "ENOENT") {
       return res.status(404).json({
-        status: "Failed",
+        status: "error",
         message: "Not found",
       });
     } else if (err.code === "EWRONGID") {
       return res.status(400).json({
-        status: "Failed",
+        status: "error",
         message: "Wrong Id Format",
       });
     }
     // handle error general
     return res.status(500).json({
-      status: "Failed",
+      status: "error",
       message: "Internal server error",
     });
   }
@@ -42,9 +42,7 @@ export const createCartController = async (req, res) => {
     const cart = await cm.addCart();
     return res.status(200).json({
       status: "Success",
-      payload: {
-        cid: cart._id,
-      },
+      payload: cart,
     });
   } catch (err) {
     console.log(err);
@@ -58,16 +56,15 @@ export const createCartController = async (req, res) => {
 export const updateProductController = async (req, res) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
-  const amt = localParseInt(req.body, NaN);
+  
+  let amt = req.body
+  amt = localParseInt(amt, NaN);
   try {
     if (isNaN(amt)) throw new Error("BADREQUEST");
-    await cm.updateProduct(cid, pid, amt);
+    const cart = await cm.updateProduct(cid, pid, amt);
     return res.status(200).json({
       status: "success",
-      payload: {
-        cid: cid,
-        pid: pid,
-      },
+      payload: cart,
     });
   } catch (err) {
     console.log(err);

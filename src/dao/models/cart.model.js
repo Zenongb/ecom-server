@@ -77,19 +77,23 @@ async function addCart(products = undefined) {
 // ADD PROD
 async function updateProduct(cid, pid, amt) {
   try {
-    // quiero poder enviar un solo pedido a la db y que esta se ocupe de la logica de
-    // crear una entrada del objeto o actualizar un objeto.
-    const updateResult = await this.updateOne(
-      { _id: cid, "products.pid": pid },
-      {
-        $set: { "products.$.quantity": amt },
-      }
-    );
-    console.log("update result is:", updateResult);
-    // checkeamos los resultados del update
-    if (updateResult.matchedCount === 0) {
+    const cart = await this.findById(cid)
+    console.log("cart is ", cart)
+    if (cart === null) {
       throw new Error("ENOENT");
     }
+    const pIdx = cart.products.findIndex(p => p.pid === pid)
+    
+    // caso de que no exista el prod count
+    if (pIdx < 0) cart.products.push({pid: pid, quantity: amt})
+    // caso de que exista
+    else cart.products[pIdx].quantity = amt
+    await cart.save()
+
+
+    console.log("cart is:", cart);
+    // checkeamos los resultados del update
+    return cart;
   } catch (err) {
     // error handling
     if (err.message === "ENOENT") {
