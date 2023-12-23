@@ -3,6 +3,20 @@ import { Router } from "express";
 
 export const webRouter = Router()
 
+webRouter.get("/register", (_, res) => {
+    res.render("register.handlebars", {
+        title: "Registrarse",
+        styles: "/static/css/auth.style.css"
+    })
+})
+
+webRouter.get("/login", (_, res) => {
+    res.render("login.handlebars", {
+        title: "Log in",
+        styles: "/static/css/auth.style.css"
+    })
+})
+
 webRouter.get("/products", (_, res) => {
     res.render("products.handlebars", {
         title: "Productos",
