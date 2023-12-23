@@ -1,5 +1,5 @@
 import { PRODUCTS_PER_PAGE } from "../config.js";
-import ProductManager from "../dao/models/product.model.js";
+import ProductManager from "../database/models/product.model.js";
 
 const pm = ProductManager;
 

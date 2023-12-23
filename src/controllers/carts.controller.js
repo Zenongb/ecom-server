@@ -1,4 +1,4 @@
-import CartManager from "../dao/models/cart.model.js";
+import CartManager from "../database/models/cart.model.js";
 import { localParseInt } from "../utils/lib.js";
 
 const cm = CartManager;
