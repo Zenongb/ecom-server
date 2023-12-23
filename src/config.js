@@ -10,27 +10,52 @@ export const PRODUCTS_PER_PAGE = 10
 export const PORT = 8080
 
 // generacion de la database URI 
-let userAuth
-let dbUri
-const database = "ecommerce"
+let mainUser
+let mainDbUri
+const mainDatabase = "ecommerce"
 // check si exiten variables de amibente para vincular la db y protejer 
 // secretos como user y pwd
-if (process.env.ECOM_DB_URI) {
-  console.log("Recolectando variables de ambiente para conexion con la database")
+if (process.env.MAIN_DB_URI) {
+  console.log("Recolectando variables de ambiente para conexion con la main database")
   // agarramos el URI
-  dbUri = process.env.ECOM_DB_URI
+  mainDbUri = process.env.MAIN_DB_URI
   // Procesamos user y pwd
-  if (process.env.ECOM_DB_USER && process.env.ECOM_DB_PWD) {
+  if (process.env.MAIN_DB_USER && process.env.MAIN_DB_PWD) {
     // se pasa username y pwd de la database
     console.log("Username y password reconocidos")
-    userAuth = `${process.env.ECOM_DB_USER}:${process.env.ECOM_DB_PWD}@`
+    mainUser = `${process.env.MAIN_DB_USER}:${process.env.MAIN_DB_PWD}@`
   } else {
     // no se pasa nada
-    userAuth = ""
+    mainUser = ""
+  }
+} else {
+  throw new Error("Missing URI for database connection")
+}
+// DATABASE URI
+export const MAIN_DB_URL = `mongodb+srv://${mainUser}${mainDbUri}/${mainDatabase}?retryWrites=true&w=majority`
+
+// generacion de la auth database URI 
+let authUser
+let authDbUri
+const authDatabase = "auth"
+// check si exiten variables de amibente para vincular la db y protejer 
+// secretos como user y pwd
+if (process.env.AUTH_DB_URI) {
+  console.log("Recolectando variables de ambiente para conexion con la database auth")
+  // agarramos el URI
+  dbUri = process.env.AUTH_DB_URI
+  // Procesamos user y pwd
+  if (process.env.AUTH_DB_USER && process.env.AUTH_DB_PWD) {
+    // se pasa username y pwd de la database
+    console.log("Username y password reconocidos")
+    authUser = `${process.env.AUTH_DB_USER}:${process.env.AUTH_DB_PWD}@`
+  } else {
+    // no se pasa nada
+    authUser = ""
   }
 } else {
   throw new Error("Missing URI for database connection")
 }
 
 // DATABASE URI
-export const DB_URL = `mongodb+srv://${userAuth}${dbUri}/${database}?retryWrites=true&w=majority`
+export const DB_URL = `mongodb+srv://${authUser}${authDbUri}/${authDatabase}?retryWrites=true&w=majority`
