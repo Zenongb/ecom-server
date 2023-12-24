@@ -1,5 +1,7 @@
 import { Router } from "express";
 
+import { auth } from "../middlewares/auth.middleware.js"
+
 
 export const webRouter = Router()
 
@@ -17,7 +19,7 @@ webRouter.get("/login", (_, res) => {
     })
 })
 
-webRouter.get("/products", (_, res) => {
+webRouter.get("/products", auth("admin"), (_, res) => {
     res.render("products.handlebars", {
         title: "Productos",
         styles: "/static/css/products.style.css"

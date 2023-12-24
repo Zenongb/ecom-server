@@ -6,6 +6,9 @@ import mongoose from "mongoose"
 
 import { MAIN_DB_URL, PORT } from "./config.js"
 
+// session handler import
+import { sessionHandler } from "./middlewares/auth.middleware.js"
+
 // Routers import
 import { webRouter } from "./routers/web.router.js"
 import { apiRouter } from "./routers/api.router.js"
@@ -30,6 +33,9 @@ app.use(express.urlencoded({extended: true}))
 // integers recibidos para el update de products
 app.use(express.json({strict: false})) 
 
+// aniadimos el session handler
+app.use(sessionHandler)
+
 // instanciar el servidor http
 const httpServer = app.listen(PORT, () => {
   console.log(`listening on localhost:${PORT}`)
@@ -51,13 +57,15 @@ app.use("/api", apiRouter)
 
 app.use("/", webRouter)
 
+// pro un error indefinido con la store de connect mongo, voy a deprecar temporal
+// mente el gracefull shutdown
 // Realizamos un graceful shutdown del sistema
-process.on('SIGTERM', () => {
-  console.log('Cerrando Servidor.')
+// process.on('SIGUSR2', () => {
+//   console.log('Cerrando Servidor.')
   // cerramos la conexion a la db
-  mongoose.connection.close()
+//   mongoose.connection.close()
   // cerramos el servidor
-  httpServer.close(() => {
-    console.log('HTTP server closed')
-  })
-})
+//   httpServer.close(() => {
+//     console.log('HTTP server closed')
+//   })
+// })

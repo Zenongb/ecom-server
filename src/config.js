@@ -9,6 +9,9 @@ export const PRODUCTS_PER_PAGE = 10
 
 export const PORT = 8080
 
+// admin email
+export const ADMIN_USER_MAIL = "zeta@admin.com"
+
 // generacion de la database URI 
 let mainUser
 let mainDbUri
@@ -64,5 +67,6 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("Missing session secret")
 } else {
   ss = process.env.SESSION_SECRET
+  console.log("gathered session secret")
 }
 export const SESSION_SECRET = ss
