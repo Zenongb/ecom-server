@@ -31,7 +31,7 @@ if (process.env.MAIN_DB_URI) {
 } else {
   throw new Error("Missing URI for database connection")
 }
-// DATABASE URI
+// MAIN DATABASE URI
 export const MAIN_DB_URL = `mongodb+srv://${mainUser}${mainDbUri}/${mainDatabase}?retryWrites=true&w=majority`
 
 // generacion de la auth database URI 
@@ -43,7 +43,7 @@ const authDatabase = "auth"
 if (process.env.AUTH_DB_URI) {
   console.log("Recolectando variables de ambiente para conexion con la database auth")
   // agarramos el URI
-  dbUri = process.env.AUTH_DB_URI
+  authDbUri = process.env.AUTH_DB_URI
   // Procesamos user y pwd
   if (process.env.AUTH_DB_USER && process.env.AUTH_DB_PWD) {
     // se pasa username y pwd de la database
@@ -56,6 +56,13 @@ if (process.env.AUTH_DB_URI) {
 } else {
   throw new Error("Missing URI for database connection")
 }
+// AUTH DATABASE URI
+export const AUTH_DB_URL = `mongodb+srv://${authUser}${authDbUri}/${authDatabase}`
 
-// DATABASE URI
-export const DB_URL = `mongodb+srv://${authUser}${authDbUri}/${authDatabase}?retryWrites=true&w=majority`
+var ss
+if (!process.env.SESSION_SECRET) {
+  throw new Error("Missing session secret")
+} else {
+  ss = process.env.SESSION_SECRET
+}
+export const SESSION_SECRET = ss

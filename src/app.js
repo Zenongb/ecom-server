@@ -4,7 +4,7 @@ import { Server } from "socket.io"
 
 import mongoose from "mongoose"
 
-import { DB_URL, PORT } from "./config.js"
+import { MAIN_DB_URL, PORT } from "./config.js"
 
 // Routers import
 import { webRouter } from "./routers/web.router.js"
@@ -14,7 +14,11 @@ import { connectionSocket } from "./controllers/products.controller.js"
 
 
 const app = express()
-mongoose.connect(DB_URL)
+try {
+  await mongoose.connect(MAIN_DB_URL)
+} catch (err) {
+  throw new Error("Error al conectarse con la main DB", { cause: err })
+}
 
 // handlebars engine
 app.engine("handlebars", handlebars.engine())
