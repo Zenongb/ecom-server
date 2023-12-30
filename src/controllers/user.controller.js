@@ -1,20 +1,12 @@
-import { ADMIN_USER_MAIL } from "../config.js";
 import userManager from "../database/models/user.model.js";
-import { hashPwd } from "../utils/lib.js";
 
 export const register = async (req, res) => {
   const userInfo = req.body;
   try {
-    // hasheamos pwd
-    userInfo.password = hashPwd(userInfo.password);
-    if (userInfo.email === ADMIN_USER_MAIL || userInfo.email === "zeta@mail.com") {
-      userInfo.role = "admin";
-    }
-    const createResult = await userManager.create(userInfo);
-    console.log(createResult);
+    const registerResult = userManager.registerUser(userInfo)
     return res.status(201).json({
       status: "success",
-      payload: createResult,
+      payload: registerResult,
     });
   } catch (err) {
     console.log(err);
@@ -28,26 +20,12 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   const userInfo = req.body;
   try {
-    // hasheamos pwd
-    userInfo.password = hashPwd(userInfo.password);
-    console.log("userInfo")
-    console.log(userInfo)
-    let user = await userManager.findOne({ email: userInfo.email });
-    console.log("user")
-    console.log(user)
-    if (!user) {
-      throw new Error("WRONGEMAIL");
-    }
-    if (user.password !== userInfo.password) {
-      throw new Error("WRONGPWD");
-    }
-    user.loginHist.push(Date.now());
-    await user.save()
-    user = user.toObject()
-    console.log("user is",user);
+    // logueamos al usuario
+    const user = await userManager.loginUser(userInfo)
     if (req.session) {
       console.log("session is", res.session)
     }
+    // activamos la sesion del usuario
     req.session["user"] = {
       mail: user.email,
       role: user.role

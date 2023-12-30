@@ -10,7 +10,10 @@ export const PRODUCTS_PER_PAGE = 10
 export const PORT = 8080
 
 // admin email
-export const ADMIN_USER_MAIL = "zeta@admin.com"
+export const ADMIN_USER = {
+  mail: "adminCoder@coder.com",
+  pwd: "adminCod3r123"
+}
 
 // generacion de la database URI 
 let mainUser
