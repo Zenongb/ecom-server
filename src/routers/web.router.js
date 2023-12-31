@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { auth } from "../middlewares/auth.middleware.js"
+import { auth } from "../middlewares/authorization.middleware.js"
 
 
 export const webRouter = Router()

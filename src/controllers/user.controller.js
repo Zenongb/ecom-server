@@ -3,7 +3,7 @@ import userManager from "../database/models/user.model.js";
 export const register = async (req, res) => {
   const userInfo = req.body;
   try {
-    const registerResult = userManager.registerUser(userInfo)
+    const registerResult = await userManager.registerUser(userInfo);
     return res.status(201).json({
       status: "success",
       payload: registerResult,
@@ -17,19 +17,25 @@ export const register = async (req, res) => {
   }
 };
 
+// DEPRECADO
 export const login = async (req, res) => {
   const userInfo = req.body;
   try {
     // logueamos al usuario
-    const user = await userManager.loginUser(userInfo)
-    if (req.session) {
-      console.log("session is", res.session)
-    }
+    const user = await userManager.loginUser(userInfo);
     // activamos la sesion del usuario
-    req.session["user"] = {
-      mail: user.email,
-      role: user.role
-    }
+    req.login(
+      {
+        mail: user.email,
+        role: user.role,
+      },
+      // error callback
+      err => {
+        if (err) {
+          throw new Error("passport error", { cause: err });
+        }
+      }
+    );
     return res.status(201).json({
       status: "success",
       payload: user,

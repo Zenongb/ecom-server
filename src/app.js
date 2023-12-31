@@ -7,13 +7,14 @@ import mongoose from "mongoose"
 import { MAIN_DB_URL, PORT } from "./config.js"
 
 // session handler import
-import { sessionHandler } from "./middlewares/auth.middleware.js"
+import { sessionHandler } from "./middlewares/session.middleware.js"
 
 // Routers import
 import { webRouter } from "./routers/web.router.js"
 import { apiRouter } from "./routers/api.router.js"
 // Sockets import
 import { connectionSocket } from "./controllers/products.controller.js"
+import { passportInitialize, passportSession } from "./middlewares/authentication.middleware.js"
 
 
 const app = express()
@@ -35,6 +36,9 @@ app.use(express.json({strict: false}))
 
 // aniadimos el session handler
 app.use(sessionHandler)
+// aniadimos los passport handlers
+app.use(passportInitialize)
+app.use(passportSession)
 
 // instanciar el servidor http
 const httpServer = app.listen(PORT, () => {

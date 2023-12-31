@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import mongoose from "mongoose";
 
 import { ADMIN_USER } from "../../config.js";
-import { hashPwd } from "../../utils/lib.js";
+import { hashPwd, comparePwd } from "../../utils/hash.js"
+
 
 const userCollection = "users"
 const userSchema = new mongoose.Schema(
@@ -48,7 +49,7 @@ async function registerUser(user) {
     if (user.email === ADMIN_USER.mail && user.password === ADMIN_USER.pwd) {
       user.role = "admin";
     }
-    user.password = hashPwd(user.password);
+    user.password = await hashPwd(user.password);
     const createResult = await this.create(user);
     console.log("in registerUser", createResult);
     return createResult
@@ -61,16 +62,13 @@ async function registerUser(user) {
 async function loginUser(loginData) {
   try {
     // hasheamos pwd
-    loginData.password = hashPwd(loginData.password);
-    console.log("userInfo")
-    console.log(loginData)
     let user = await this.findOne({ email: loginData.email });
     console.log("user")
     console.log(user)
     if (!user) {
       throw new Error("WRONGEMAIL");
     }
-    if (user.password !== loginData.password) {
+    if (!await comparePwd(loginData.password, user.password)) {
       throw new Error("WRONGPWD");
     }
     user.loginHist.push(Date.now());
