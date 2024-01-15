@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
@@ -49,7 +48,7 @@ async function registerUser(user) {
     if (user.email === ADMIN_USER.mail && user.password === ADMIN_USER.pwd) {
       user.role = "admin";
     }
-    user.password = await hashPwd(user.password);
+    if (user.password) user.password = await hashPwd(user.password);
     const createResult = await this.create(user);
     console.log("in registerUser", createResult);
     return createResult
@@ -66,10 +65,15 @@ async function loginUser(loginData) {
     console.log("user")
     console.log(user)
     if (!user) {
-      throw new Error("WRONGEMAIL");
+      const errNotFound = new Error("User not found!");
+      errNotFound.code = "ENOTFOUND"
+      throw errNotFound
     }
-    if (!await comparePwd(loginData.password, user.password)) {
-      throw new Error("WRONGPWD");
+    // checkear si existe password
+    if (user.password) {
+      if (!await comparePwd(loginData.password, user.password)) {
+        throw new Error("WRONGPWD");
+      }
     }
     user.loginHist.push(Date.now());
     await user.save()
@@ -79,9 +83,9 @@ async function loginUser(loginData) {
     return user
   } catch (err) {
     // TODO: hacer prolijo
-    throw new Error(err.message)
+    throw err
   }
 }
 
-const userManager = mongoose.model(userCollection, userSchema)
-export default userManager
+const UserManager = mongoose.model(userCollection, userSchema)
+export default UserManager

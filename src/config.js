@@ -2,12 +2,14 @@
 // variable del path de productos
 export const PRODUCTS_PATH = "./data/products.json"; // cambiar a path absoluto
 // variable de path de carrito
-export const CARTS_PATH = "./data/carts.json"; // cambiar a path absolutoexport const PORT = 8080
+export const CARTS_PATH = "./data/carts.json"; // cambiar a path absoluto
 
 // Variable de cantidad de productos por pagina
 export const PRODUCTS_PER_PAGE = 10
 
 export const PORT = 8080
+
+export const AUTH_ONLY_TAG = "AUTH_ONLY"
 
 // admin email
 export const ADMIN_USER = {
@@ -73,3 +75,22 @@ if (!process.env.SESSION_SECRET) {
   console.log("gathered session secret")
 }
 export const SESSION_SECRET = ss
+
+
+// GITHUB CLIENT AND SECRET
+var ghCbUrl, ghClient, ghSecret
+if (!process.env.GITHUB_CLIENT_SECRET || !process.env.GITHUB_CLIENT_ID || !process.env.GITHUB_CALLBACK_URL) {
+  throw new Error("missing github config variables")
+} else {
+  ghCbUrl = process.env.GITHUB_CALLBACK_URL
+  ghClient = process.env.GITHUB_CLIENT_ID
+  ghSecret = process.env.GITHUB_CLIENT_SECRET
+  console.log("gathered github id & secret")
+}
+export const GITHUB_CALLBACK_URL = ghCbUrl
+export const GITHUB_CLIENT_ID = ghClient
+export const GITHUB_CLIENT_SECRET = ghSecret
+
+
+
+

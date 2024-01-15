@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { AUTH_ONLY_TAG } from "../config.js";
 
 import { auth } from "../middlewares/authorization.middleware.js"
 
@@ -19,7 +20,7 @@ webRouter.get("/login", (_, res) => {
     })
 })
 
-webRouter.get("/products", auth("admin"), (_, res) => {
+webRouter.get("/products", auth(AUTH_ONLY_TAG), (_, res) => {
     res.render("products.handlebars", {
         title: "Productos",
         styles: "/static/css/products.style.css"

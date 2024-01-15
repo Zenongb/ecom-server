@@ -1,2 +1,3 @@
 # config para nvim telescope
 !/data
+!.env

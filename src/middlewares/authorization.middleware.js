@@ -1,9 +1,13 @@
+import { AUTH_ONLY_TAG } from "../config.js";
 // middleware de autorización por privilegios
 export const auth = role => {
   return (req,res,next) => {
     const user = req.user
     console.log("in auth middle", user)
-    if (user?.role === role) {
+    if (role === AUTH_ONLY_TAG && req.isAuthenticated()) {
+      // solo auth necesaria
+      next()
+    } else if (user?.role === role) {
       // coinciden los privilegios
       next()
     } else if (req.isAuthenticated()){

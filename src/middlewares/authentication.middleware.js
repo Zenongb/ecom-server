@@ -1,19 +1,46 @@
 import passport from "passport"
 import { Strategy as LocalStrategy } from "passport-local"
-import userManager from "../database/models/user.model.js"
-
+import { Strategy as GithubStrategy } from "passport-github2"
+import UserManager from "../database/models/user.model.js"
+import { GITHUB_CALLBACK_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config.js";
 
 passport.use('loginLocal', new LocalStrategy({
   usernameField: 'email'
-}, async function verificationCallback(username, password, done) {
+}, async function(username, password, done) {
   try {
-    console.log("in verification callback", username, password)
-    const userData = await userManager.loginUser({ email: username, password: password })
+    const userData = await UserManager.loginUser({ email: username, password: password })
     delete userData.loginHist, userData._id
     done(null, userData)
   } catch (err) {
     done(err)
   }
+}))
+
+passport.use("githubLogin", new GithubStrategy({
+  clientID: GITHUB_CLIENT_ID,
+  clientSecret: GITHUB_CLIENT_SECRET,
+  callbackURL: GITHUB_CALLBACK_URL,
+}, async function(_, __, profile, done) {
+  let user
+  try {
+    user = await UserManager.loginUser({
+      email: profile.username,
+    })
+  } catch (err) {
+    // agarramos el error not found para resolver el caso de
+    // que no se haya un usuario registrado
+    if (err.code === "ENOTFOUND") {
+      user = await UserManager.registerUser({
+      email: profile.username,
+    })
+    } else {
+      // es otro error
+      done(err)    
+    }
+  }
+  console.log("user is", user)
+  delete user.loginHist, user._id
+  done(null, user)
 }))
 
 
