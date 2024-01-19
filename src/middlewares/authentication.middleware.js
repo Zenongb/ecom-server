@@ -24,12 +24,13 @@ passport.use("githubLogin", new GithubStrategy({
   let user
   try {
     user = await UserManager.loginUser({
-      email: profile.username,
+      // caso en el que no exista email en el profile
+      email: profile._json.email || profile._json.login,
     })
   } catch (err) {
     // agarramos el error not found para resolver el caso de
     // que no se haya un usuario registrado
-    if (err.code === "ENOTFOUND") {
+    if (err.code === "ENOENT") {
       user = await UserManager.registerUser({
       email: profile.username,
     })
@@ -38,7 +39,6 @@ passport.use("githubLogin", new GithubStrategy({
       done(err)    
     }
   }
-  console.log("user is", user)
   delete user.loginHist, user._id
   done(null, user)
 }))

@@ -12,13 +12,26 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: randomUUID(),
     },
+    first_name: {
+      type: String,
+    }, 
+    last_name: {
+      type: String,
+    }, 
     email: {
       type: String,
       required: true,
       unique: true,
     },
+    age : {
+      type: Number
+    },
     password: {
       type: String,
+    },
+    cart: {
+      type: String,
+      ref: "carts"
     },
     role: {
       type: String,
@@ -51,6 +64,8 @@ async function registerUser(user) {
     if (user.password) user.password = await hashPwd(user.password);
     const createResult = await this.create(user);
     console.log("in registerUser", createResult);
+    createResult = createResult.toObject()
+    delete user.password
     return createResult
   } catch (err) {
     // TODO: hacer prolijo
@@ -66,13 +81,15 @@ async function loginUser(loginData) {
     console.log(user)
     if (!user) {
       const errNotFound = new Error("User not found!");
-      errNotFound.code = "ENOTFOUND"
+      errNotFound.code = "ENOENT"
       throw errNotFound
     }
     // checkear si existe password
     if (user.password) {
       if (!await comparePwd(loginData.password, user.password)) {
-        throw new Error("WRONGPWD");
+        const errWrongPwd = new Error("WRONGPWD");
+        errWrongPwd.code = "EBADREQ"
+        throw errWrongPwd
       }
     }
     user.loginHist.push(Date.now());

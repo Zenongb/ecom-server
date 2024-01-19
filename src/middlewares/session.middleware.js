@@ -19,6 +19,7 @@ export const sessionHandler = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 60 * 60 * 2 * 1000
+    maxAge: 60 * 60 * 24 * 1000,
+    httpOnly: true
   }
 });
