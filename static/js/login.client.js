@@ -12,6 +12,7 @@ loginForm.addEventListener("submit", async event => {
     body: new URLSearchParams(data),
   }).then(res => res.json());
 
+  console.log("res is");
   console.log(res);
   if (res.status === "success") {
     window.location.href = "/products";

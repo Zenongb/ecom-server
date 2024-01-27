@@ -62,7 +62,7 @@ async function registerUser(user) {
       user.role = "admin";
     }
     if (user.password) user.password = await hashPwd(user.password);
-    const createResult = await this.create(user);
+    let createResult = await this.create(user);
     console.log("in registerUser", createResult);
     createResult = createResult.toObject()
     delete user.password

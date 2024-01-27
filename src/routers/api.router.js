@@ -5,6 +5,6 @@ import { usersRouter } from "./users.router.js";
 
 export const apiRouter = Router()
 
-apiRouter.use("/", usersRouter)
+apiRouter.use("/api", usersRouter)
 apiRouter.use("/products", productsRouter)
 apiRouter.use("/carts", cartsRouter)
