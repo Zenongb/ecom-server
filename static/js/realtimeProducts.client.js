@@ -8,6 +8,7 @@ socket.on("connect", () => {
 });
 
 socket.on("updateProducts", products => {
+  console.log("products son", products)
   updateTable(products);
 });
 
@@ -32,19 +33,18 @@ addProdForm.addEventListener("submit", event => {
   }
   console.log("sending form");
   console.log(prodSubmit);
-  fetch("/api/products", {
+  let res = fetch("/api/products", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(prodSubmit),
   })
-    .then(res => {
-      console.log(res.json());
-    })
+    .then(res => res.json())
     .catch(err => {
-      console.log(err);
+      console.log("err is",err);
     });
+  console.log("res is", res)
 });
 
 document.getElementById("deleteProduct").addEventListener("submit", event => {

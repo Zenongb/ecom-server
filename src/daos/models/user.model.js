@@ -87,7 +87,7 @@ async function loginUser(loginData) {
     // checkear si existe password
     if (user.password) {
       if (!await comparePwd(loginData.password, user.password)) {
-        const errWrongPwd = new Error("WRONGPWD");
+        const errWrongPwd = new Error("Wrong email or password");
         errWrongPwd.code = "EBADREQ"
         throw errWrongPwd
       }

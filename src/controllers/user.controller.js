@@ -1,6 +1,6 @@
-import userManager from "../database/models/user.model.js";
+import userManager from "../daos/models/user.model.js";
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   const userInfo = req.body;
   try {
     const registerResult = await userManager.registerUser(userInfo);
@@ -9,16 +9,12 @@ export const register = async (req, res) => {
       payload: registerResult,
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    next(err)
   }
 };
 
 // DEPRECADO
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   const userInfo = req.body;
   try {
     // logueamos al usuario
@@ -41,21 +37,6 @@ export const login = async (req, res) => {
       payload: user,
     });
   } catch (err) {
-    console.log(err);
-    if (err.message === "WRONGPWD") {
-      return res.status(400).json({
-        status: "error",
-        message: "Wrong password",
-      });
-    } else if (err.message === "WRONGEMAIL") {
-      return res.status(404).json({
-        status: "error",
-        message: "No user with that email",
-      });
-    }
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    next(err)
   }
 };

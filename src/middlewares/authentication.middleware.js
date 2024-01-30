@@ -1,7 +1,7 @@
 import passport from "passport"
 import { Strategy as LocalStrategy } from "passport-local"
 import { Strategy as GithubStrategy } from "passport-github2"
-import UserManager from "../database/models/user.model.js"
+import UserManager from "../daos/models/user.model.js"
 import { GITHUB_CALLBACK_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config.js";
 
 passport.use('loginLocal', new LocalStrategy({

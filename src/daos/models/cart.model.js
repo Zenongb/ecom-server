@@ -195,7 +195,7 @@ async function bulkUpdateProducts(cid, pids) {
   } catch (err) {
     if (err.name === "CastError") {
       const errBadReq = new Error("Array de productos malformado");
-      errBadReq.code = "BADREQUEST";
+      errBadReq.code = "EBADREQ";
       throw errBadReq;
     }
     throw new Error("Error al intentar hacer bulk update", { cause: err });

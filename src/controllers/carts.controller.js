@@ -1,9 +1,9 @@
-import CartManager from "../database/models/cart.model.js";
+import CartManager from "../daos/models/cart.model.js";
 import { localParseInt } from "../utils/lib.js";
 
 const cm = CartManager;
 
-export const getByIdController = async (req, res) => {
+export const getByIdController = async (req, res, next) => {
   const cid = req.params.cid;
   try {
     // buscamos el carrito
@@ -14,28 +14,11 @@ export const getByIdController = async (req, res) => {
       payload: cart,
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "error",
-        message: "Not found",
-      });
-    } else if (err.code === "EWRONGID") {
-      return res.status(400).json({
-        status: "error",
-        message: "Wrong Id Format",
-      });
-    }
-    // handle error general
-    return res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
-export const createCartController = async (req, res) => {
+export const createCartController = async (req, res, next) => {
   // TODO: agregar funcionalidad para agregar productos al carrito
   // en el momento de instanciacion del mismo
   try {
@@ -45,51 +28,29 @@ export const createCartController = async (req, res) => {
       payload: cart,
     });
   } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
-export const updateProductController = async (req, res) => {
+export const updateProductController = async (req, res, next) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
   
   let amt = req.body
   amt = localParseInt(amt, NaN);
   try {
-    if (isNaN(amt)) throw new Error("BADREQUEST");
+    if (isNaN(amt)) {
+      const err = new Error("Amount recieved is not a number");
+      err.code = "EBADREQ"
+      throw err
+    }
     const cart = await cm.updateProduct(cid, pid, amt);
     return res.status(200).json({
       status: "success",
       payload: cart,
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "error",
-        message: "Not found",
-      });
-    } else if (err.code === "EWRONGID") {
-      return res.status(400).json({
-        status: "error",
-        message: "Wrong Id Format",
-      });
-    } else if (err.message === "BADREQUEST") {
-      return res.status(400).json({
-        status: "error",
-        message: "not passed int in body",
-      });
-    }
-    // handle error general
-    return res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
@@ -97,14 +58,15 @@ export const bulkUpdateController = async (req, res) => {
   // recibo array de productos en formato [pid(String), ... , pid(String)],
   const cid = req.params.cid;
   const products = req.body;
-  if (!Array.isArray(products))
-    return res.status(400).json({
-      status: "error",
-      message: "malformed products",
-    });
   try {
+    if (!Array.isArray(products)) {
+      // shallow check de tipo
+      const err = new Error("Malformed Products")
+      err.code = "EBADREQ"
+      throw err
+    }
     const updateRes = await cm.bulkUpdateProducts(cid, products);
-    console.log("in controller, updateRes:");
+    console.log("in bulk update controller, updateRes:");
     console.log(updateRes);
     if (updateRes.modifiedCount === 1) {
       res.status(201).json({
@@ -113,20 +75,11 @@ export const bulkUpdateController = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
-    if (err.code === "BADREQUEST")
-      return res.status(400).json({
-        status: "error",
-        message: err.message,
-      });
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    next(err)
   }
 };
 
-export const removeProductController = async (req, res) => {
+export const removeProductController = async (req, res, next) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
   console.log(`Removiendo una unidad de producto ${pid} al carrito ${cid}`);
@@ -140,24 +93,7 @@ export const removeProductController = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "Failed",
-        message: "Not found",
-      });
-    } else if (err.code === "EWRONGID") {
-      return res.status(400).json({
-        status: "Failed",
-        message: "Wrong Id Format",
-      });
-    }
-    // handle error general
-    return res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
@@ -170,23 +106,6 @@ export const removeAllProductsController = async (req, res) => {
       message: "Se removieron todos los productos del carrito",
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "Failed",
-        message: "Not found",
-      });
-    } else if (err.code === "EWRONGID") {
-      return res.status(400).json({
-        status: "Failed",
-        message: "Wrong Id Format",
-      });
-    }
-    // handle error general
-    return res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };

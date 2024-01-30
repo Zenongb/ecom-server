@@ -14,6 +14,7 @@ import { webRouter } from "./routers/web.router.js"
 import { apiRouter } from "./routers/api.router.js"
 // Sockets import
 import { connectionSocket } from "./controllers/products.controller.js"
+// passport handlers import
 import { passportInitialize, passportSession } from "./middlewares/authentication.middleware.js"
 
 

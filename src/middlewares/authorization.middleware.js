@@ -12,16 +12,14 @@ export const auth = role => {
       next()
     } else if (req.isAuthenticated()){
       // no coinciden y hay un usuario logueado
-      return res.status(403).json({
-        status: "error",
-        message: "user forbidden to enter this page"
-      })
+      const errUnauthorized = new Error("User is forbidden to enter this link")
+      errUnauthorized.code = "EFORBIDDEN"
+      next(errUnauthorized)
     } else {
       // no coinciden y no hay user logueado
-      return res.status(401).json({
-        status: "unauthorized",
-        message: "log in first"
-      })
+      const errNotLoggedIn = new Error("There is no user logged in")
+      errNotLoggedIn.code = "ENOAUTH"
+      next(errNotLoggedIn)
     }
   }
 }

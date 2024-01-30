@@ -1,9 +1,9 @@
 import { PRODUCTS_PER_PAGE } from "../config.js";
-import ProductManager from "../database/models/product.model.js";
+import ProductManager from "../daos/models/product.model.js";
 
 const pm = ProductManager;
 
-export const getController = async (req, res) => {
+export const getController = async (req, res, next) => {
   try {
     let limit = req.query.limit;
     // Parseamos limit
@@ -29,7 +29,7 @@ export const getController = async (req, res) => {
     if (searchQuery.available) {
       searchQuery.available = searchQuery.available === "true"? true : false;
     }
-    const [{ paginatedProducts, totalCount }] = await pm.getProducts(
+    const { paginatedProducts, totalCount } = await pm.getProducts(
       searchQuery,
       page,
       sort,
@@ -62,12 +62,11 @@ export const getController = async (req, res) => {
       prevLink: setUri(prevPage),
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).send("Error al buscar los productos");
+    next(err)
   }
 };
 
-export const getByIdController = async (req, res) => {
+export const getByIdController = async (req, res, next) => {
   let pid = req.params.pid;
   console.log(`Searching for ${pid}`);
   try {
@@ -77,49 +76,27 @@ export const getByIdController = async (req, res) => {
       payload: product,
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "Failed",
-        message: "Not Found",
-      });
-    }
-    // generic error response
-    return res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
 // UPDATE
-export const postController = async (req, res) => {
+export const postController = async (req, res, next) => {
   const np = req.body;
-  console.log(`Creating new product with following data ${np}`);
+  console.log("Creating new product");
   console.log(np);
   try {
     const createResult = await pm.addProduct(np);
     return res.status(200).json({
       status: "Success",
-      payload: np,
+      payload: createResult,
     });
   } catch (err) {
-    console.log(err);
-    if (err.code === "MISSINGPARAMS") {
-      return res.status(400).json({
-        status: "Failed",
-        message: "Missing parameters",
-      });
-    }
-    res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
-export const putController = async (req, res) => {
+export const putController = async (req, res, next) => {
   const pid = req.params.pid;
   console.log(`Updating ${pid}`);
   const updates = req.body;
@@ -134,16 +111,12 @@ export const putController = async (req, res) => {
       message: "Producto actualizado exitosamente",
     });
   } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
 // DELETE
-export const deleteController = async (req, res) => {
+export const deleteController = async (req, res, next) => {
   const pid = req.params.pid;
   console.log(`Deleting ${pid}`);
   try {
@@ -153,19 +126,7 @@ export const deleteController = async (req, res) => {
       message: "Producto eliminado exitosmente",
     });
   } catch (err) {
-    console.log(err);
-    // handle not found error
-    if (err.code === "ENOENT") {
-      return res.status(404).json({
-        status: "Failed",
-        message: "Not Found",
-      });
-    }
-    // generic error response
-    return res.status(500).json({
-      status: "Failed",
-      message: "Internal server error",
-    });
+    next(err)
   }
 };
 
@@ -174,13 +135,14 @@ export const deleteController = async (req, res) => {
 // pero realmente no se como estructurarlo
 
 import { wsServer } from "../app.js";
-import { PRODUCTS_PATH } from "../config.js";
 
 export const connectionSocket = async socket => {
-  socket.emit("updateProducts", await pm.getProducts());
+  const { paginatedProducts, _ } = await pm.getProducts({}, 0, "asc")
+  socket.emit("updateProducts", paginatedProducts);
 };
 
 // SERVER SOCKETS
 export const serverEmitUpdateProducts = async () => {
-  wsServer.emit("updateProducts", await pm.getProducts());
+  const { paginatedProducts, _ } = await pm.getProducts({}, 0, "asc")
+  wsServer.emit("updateProducts", paginatedProducts);
 };

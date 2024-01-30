@@ -94,7 +94,13 @@ async function getProducts(query, page, sort, limit = PRODUCTS_PER_PAGE) {
     paginationPipeline.push({$sort: sortQuery})
     }
     // agregamos skip y limit
-    paginationPipeline.push({$skip: page * limit},{$limit: limit})
+    paginationPipeline.push(
+      {
+        $skip: page * limit
+      },{
+        $limit: limit
+      }
+    )
     const aggrRes = await this.aggregate([{
       // para poder conseguir el num de paginas al mismo tiempo de conseguir los
       // resultados usamos una agrregation pipeline con el stage $facet para hacer
@@ -107,7 +113,7 @@ async function getProducts(query, page, sort, limit = PRODUCTS_PER_PAGE) {
           {$count: 'totalCount'}
         ]
       }}])
-    return aggrRes;
+    return aggrRes[0];
   } catch (err) {
     throw new Error("Error al buscar los productos", { cause: err });
   }
@@ -152,7 +158,7 @@ async function addProduct({
       const errMissingParams = new Error(
         "Faltan parametros para crear Producto"
       );
-      errMissingParams.code = "MISSINGPARAMS";
+      errMissingParams.code = "EBADREQ";
       throw errMissingParams;
     }
     throw new Error("Error al crear el producto", { cause: err });
