@@ -1,7 +1,7 @@
 import mongoose from "mongoose"
 import { MAIN_DB_URL } from '../config.js'
 
-export default async function() {
+export async function connectDb() {
   try {
     await mongoose.connect(MAIN_DB_URL).then(() => {
       console.log("connected to database")
@@ -11,4 +11,6 @@ export default async function() {
   }
 }
 
-
+export async function closeDb() {
+  await mongoose.connection.close()
+}

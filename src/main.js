@@ -1,7 +1,7 @@
 import { Server } from "socket.io"
 
 import { app } from './app/app.js'
-import connectDb from "./database/mongodb.database.js"
+import { closeDb, connectDb } from "./database/mongodb.database.js"
 
 import { PORT } from "./config.js"
 
@@ -19,11 +19,11 @@ export const wsServer = new Server(httpServer)
 // pro un error indefinido con la store de connect mongo, voy a deprecar temporal
 // mente el gracefull shutdown
 // Realizamos un graceful shutdown del sistema
-// process.on('SIGUSR2', () => {
+// process.on('SIGTERM', () => {
 //   console.log('Cerrando Servidor.')
-  // cerramos la conexion a la db
-//   mongoose.connection.close()
-  // cerramos el servidor
+//   // cerramos la conexion a la db
+//   closeDb()
+//   // cerramos el servidor
 //   httpServer.close(() => {
 //     console.log('HTTP server closed')
 //   })
