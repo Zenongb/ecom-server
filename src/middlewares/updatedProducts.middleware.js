@@ -1,4 +1,4 @@
-import { serverEmitUpdateProducts } from "../controllers/products.controller.js";
+import { serverEmitUpdateProducts } from "../sockets/products.socket.js";
 
 // este middleware se conecta al products router para propagar las
 // actualizaciones de los productos a los clientes del servidor wss
