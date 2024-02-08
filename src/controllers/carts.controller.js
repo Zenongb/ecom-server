@@ -1,5 +1,5 @@
 import CartManager from "../daos/models/cart.model.js";
-import { localParseInt } from "../utils/lib.js";
+import { castNum } from "../utils/lib.js";
 
 const cm = CartManager;
 
@@ -37,7 +37,7 @@ export const updateProductController = async (req, res, next) => {
   const pid = req.params.pid;
   
   let amt = req.body
-  amt = localParseInt(amt, NaN);
+  amt = castNum(amt, NaN);
   try {
     if (isNaN(amt)) {
       const err = new Error("Amount recieved is not a number");

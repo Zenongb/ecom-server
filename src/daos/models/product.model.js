@@ -167,6 +167,8 @@ async function addProduct({
 
 async function updateProduct(update) {
   try {
+    console.log("update is", update)
+    delete update.id
     const updatedProduct = await this.findOneAndUpdate(
       { _id: update.id },
       {

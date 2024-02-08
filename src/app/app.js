@@ -3,9 +3,7 @@ import handlebars from "express-handlebars"
 // session handler import
 import { sessionHandler } from "../middlewares/session.middleware.js"
 
-// Routers import
-import { webRouter } from "../routers/web.router.js"
-import { apiRouter } from "../routers/api.router.js"
+import { indexRouter } from "../routers/index.router.js"
 // passport handlers import
 import { passportInitialize, passportSession } from "../middlewares/authentication.middleware.js"
 
@@ -36,6 +34,4 @@ app.use(express.static('./views'))
 app.use("/static", express.static("./static"))
 
 // ROUTES
-app.use("/api", apiRouter)
-
-app.use("/", webRouter)
+app.use("/", indexRouter)

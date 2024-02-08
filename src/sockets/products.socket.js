@@ -11,5 +11,5 @@ export const connectionSocket = async socket => {
 // SERVER SOCKETS
 export const serverEmitUpdateProducts = async () => {
   const { paginatedProducts, _ } = await pm.getProducts({}, 0, "asc")
-  wsServer.emit("updateProducts", paginatedProducts);
+  wsServer.to("realtimeProducts").emit("updateProducts", paginatedProducts);
 };

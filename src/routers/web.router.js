@@ -44,3 +44,11 @@ webRouter.get("/realtimeProducts", (_, res) => {
         styles: "/static/css/realtimeProducts.style.css"
     })
 })
+
+webRouter.get("/messenger", (_, res) => {
+    res.render("messenger.handlebars", {
+        title: "Chat",
+        styles: "/static/css/messenger.style.css"
+    })
+})
+

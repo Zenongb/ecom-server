@@ -96,7 +96,6 @@ async function loginUser(loginData) {
     await user.save()
     user = user.toObject()
     delete user.password
-    console.log("user is",user);
     return user
   } catch (err) {
     // TODO: hacer prolijo

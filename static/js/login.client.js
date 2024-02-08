@@ -4,7 +4,7 @@ loginForm.addEventListener("submit", async event => {
   event.preventDefault();
   const data = new FormData(loginForm);
   console.log(data);
-  const res = await fetch("/api/login", {
+  const res = await fetch("/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

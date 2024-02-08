@@ -102,9 +102,8 @@ export const putController = async (req, res, next) => {
   const updates = req.body;
   console.log(`Updates are ${updates}`);
   try {
-    await pm.updateProduct({
+    await pm.updateProduct(pid, {
       ...updates,
-      id: pid,
     });
     res.status(200).json({
       status: "Success",
@@ -129,4 +128,3 @@ export const deleteController = async (req, res, next) => {
     next(err)
   }
 };
-

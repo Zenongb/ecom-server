@@ -89,16 +89,13 @@ async function updateProduct(cid, pid, amt) {
     // caso de que exista
     else cart.products[pIdx].quantity = amt
     await cart.save()
-
-
     console.log("cart is:", cart);
     // checkeamos los resultados del update
     return cart;
   } catch (err) {
     // error handling
     if (err.message === "ENOENT") {
-      // handle ENOENT
-      // tiramos el error apropiadamente
+      // handle ENOENT, tiramos el error apropiadamente
       const noCartErr = new Error(`No existe carrito con id ${cid}`);
       noCartErr.code = "ENOENT";
       throw noCartErr;
