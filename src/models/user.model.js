@@ -7,7 +7,7 @@ export class User {
   #id
   #email
   #pwd
-  constructor(
+  constructor({
     id= randomUUID(),
     email,
     pwd,
@@ -16,7 +16,7 @@ export class User {
     cart, 
     age,
     login_hist,
-  ) {
+  }) {
     try {
       this.#id = notNull(id)
       this.#pwd = await hashPwd(notNull(pwd)) 
@@ -28,7 +28,7 @@ export class User {
       this.login_hist = login_hist
     } catch (err) {
       
+      throw new Error("Error al crear usuario!", { cause: err })
     }
-
   }
 }

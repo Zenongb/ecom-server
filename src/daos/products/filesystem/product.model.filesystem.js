@@ -1,7 +1,7 @@
 import { notNull } from "../../../utils/lib.js"
 import { randomUUID } from "node:crypto"
 
-export default class Product {
+export default class ProductModel {
   // Clase contenedora de la informacion de los productos.
 
   // Variables privadas atadas a la entidad

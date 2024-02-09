@@ -1,7 +1,7 @@
 import fs from "fs/promises"
 import Product from "../models/Product.js"
 
-export default class ProductManager {
+export default class ProductDaoFilesystem {
   constructor(path) {
     this.path = path
   }

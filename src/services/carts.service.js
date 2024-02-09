@@ -1,3 +1,4 @@
+import Cart from "../models/cart.model.js"
 
 export class CartService {
 
@@ -15,7 +16,8 @@ export class CartService {
   //  CREATE CART
   async addCart(products = undefined) {
     try {
-      const createdStatus = await this.create(products);
+      const cart = new Cart({products})
+      const createdStatus = await this.dao.create(cart);
       return createdStatus;
     } catch (err) {
       throw new Error("Error al intentar aniadir el carrito", { cause: err });
@@ -25,7 +27,7 @@ export class CartService {
   // ADD PROD
   async updateProduct(cid, pid, amt) {
     try {
-      const cart = await this.findById(cid)
+      const cart = await this.dao.findById(cid)
       console.log("cart is ", cart)
       if (cart === null) {
         throw new Error("ENOENT");

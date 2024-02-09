@@ -10,7 +10,17 @@ export default class Product {
   #price  // var que no puede ser menor a 0
   #stock
 
-  constructor({title, description, price, thumbnail, code, stock, category, status=true, id=undefined}) {
+  constructor({
+    title,
+    description,
+    price,
+    thumbnail,
+    code,
+    stock,
+    category,
+    status=true,
+    id=randomUUID()
+  }) {
     // check de nullishness
     switch (true) {
       case !title:
@@ -25,11 +35,7 @@ export default class Product {
         throw errMissingParams
     }
     // check de id para cuando se "crean" productos leidos
-    if (id) {
-      this.#id = id
-    } else {
-      this.#id = randomUUID()
-    }
+    this.#id = id
     this.title = notNull(title)
     this.description = description
     this.price = notNull(price)
@@ -63,7 +69,11 @@ export default class Product {
   set stock(newStock) {
     newStock = Number(newStock)
     // check si es num 
-    if (isNaN(newStock)) throw new Error("El nuevo precio no es un numero")
+    if (isNaN(newStock)) {
+      const err = new Error("El nuevo precio no es un numero")
+      err.code = "EBADREQ"
+      throw err
+    }
     this.#stock = newStock
   }
 

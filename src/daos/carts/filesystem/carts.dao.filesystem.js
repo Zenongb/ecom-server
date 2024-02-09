@@ -1,7 +1,9 @@
 import fs from "node:fs/promises"
-import Cart from "../models/Cart.js"
+import CartModelFilesystem from "./cart.model.filesystem.js"
 
-export default class CartManager {
+// fix temporal
+const Cart = CartModelFilesystem
+export default class CartsDaoFilesystem {
   #path
   constructor(path) {
     this.#path = path

@@ -1,14 +1,11 @@
+import { castNum } from "../utils/lib.js"
 import { randomUUID } from "node:crypto"
 
 export default class Cart{
   #products
   #id
-  constructor({products, id=undefined}) {
-    if (!id) {
-      this.#id = randomUUID()
-    } else {
-      this.#id = id
-    }
+  constructor({products, id=randomUUID()}) {
+    this.#id = id
     // check si products tiene el formato especificado
     if (products === undefined || products === null) { // caso de que no se pase un products
       this.#products = []
@@ -28,14 +25,50 @@ export default class Cart{
     return [...this.#products]
   }
 
-  addProduct(newPid) {
-    let prodIndex = this.#products.findIndex(cp => cp.pid === newPid)
-    // aniadir un producto nuevo
-    if (prodIndex < 0) {
-      this.#products.push(new CartProduct({pid: newPid}))
-    } else { // el producto ya existe
-      this.#products[prodIndex].add()
+  getProdIdx(pid) {
+    return this.#products.findIndex(p=> p.pid === pid)
+  }
+
+  addProducts(newPids) {
+    const pids = Array.isArray(newPids)? newPids : [ newPids ]
+    for (const newPid of pids) {
+      let prodIndex = this.#products.findIndex(cp => cp.pid === newPid)
+      // aniadir un producto nuevo
+      if (prodIndex < 0) {
+        this.#products.push(new CartProduct({pid: newPid}))
+      } else { // el producto ya existe
+        this.#products[prodIndex].add()
+      }
     }
+  }
+
+  removeProducts(prodsToRm) {
+    // prodsToRm puede tener tres formas,
+    // 1- un string que haga referencia al producto
+    // 2- un array de strings que refieran a ods de prods
+    // 3- un objeto que contenga los campos quantity y pid
+    // 4- un arr de objs que contenga pid y quantity
+    for (let prod of prodsToRm) {
+      // asumo que recibo un array como el definido en el caso 4
+      const pIdx = this.getProdIdx(prod.pid)
+      if (pIdx < 0) continue
+      this.#products[pIdx].remove(prod.quantity)
+    }
+  }
+
+  deleteProduct(pid) {
+    const pIdx = this.getProdIdx(pid)
+    if (pIdx < 0) {
+      const err = new Error(`No hay producto de id: ${pid}`)
+      err.code = "ENOENT"
+      throw err
+    } else {
+      this.#products.splice(pIdx, 1)
+    }
+  }
+
+  deleteAllProducts() {
+    this.#products = []
   }
 
   toPOJO() {
@@ -53,8 +86,12 @@ class CartProduct{
   constructor({pid, quantity=1}) {
     this.#pid = pid
     // check si quantity es num
-    quantity = Number(quantity)
-    if (isNaN(quantity)) throw new Error("Quantity no es un numero")
+    quantity = castNum(quantity)
+    if (isNaN(quantity)) {
+      const err = new Error("Quantity no es un numero")
+      err.code = "EBADREQ"
+      throw err
+    }
     this.#quantity = quantity
   }
 
@@ -67,13 +104,8 @@ class CartProduct{
     return this.#quantity
   }
 
-  // funciones para sumar o restar a la cantidad de los productos
-  add(amt=1) {
-    this.#quantity += amt
-  }
-  remove(amt=1) {
-    // necesita handler externo para confirmar si el numero pasa a ser negativo
-    this.#quantity -= amt
+  set quantity(newQuant) {
+    this.#quantity = newQuant
   }
 
   toPOJO() {

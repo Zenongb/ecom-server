@@ -1,3 +1,4 @@
+export const MODE = "online"
 
 // variable del path de productos
 export const PRODUCTS_PATH = "./data/products.json"; // cambiar a path absoluto

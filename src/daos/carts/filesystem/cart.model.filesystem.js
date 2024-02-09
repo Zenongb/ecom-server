@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto"
 
-export default class Cart{
+export default class CartModelFilesystem{
   #products
   #id
   constructor({products, id=undefined}) {
