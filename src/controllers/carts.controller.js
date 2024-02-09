@@ -37,7 +37,7 @@ export const updateProductController = async (req, res, next) => {
   const pid = req.params.pid;
   
   let amt = req.body
-  amt = castNum(amt, NaN);
+  amt = castNum(amt);
   try {
     if (isNaN(amt)) {
       const err = new Error("Amount recieved is not a number");
