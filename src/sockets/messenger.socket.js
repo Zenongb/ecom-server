@@ -1,4 +1,4 @@
-import { wsServer } from "../app.js"
+import { wsServer } from "../main.js"
 import {msgService} from "../services/index.service.js"
 
 const mm = msgService
@@ -12,14 +12,22 @@ const mm = msgService
 // cuando el cliente se conecte le voy a dar los ultimos 20 mensajes que se dieron
 
 export const messengerConnection = async socket => {
-  const lastMessages = await mm.getLastMessages()
-  console.log("in messengerConnection", lastMessages)
-  socket.emit("getMessages", lastMessages)
-  
+  try {
+    const lastMessages = await mm.getLastMessages()
+    socket.emit("getMessages", lastMessages)
+  } catch (err) {
+    console.log(err)   
+  }
 }
 
 export const newMessage = async (msg) => {
-  const message = await mm.addMessage(msg)
-  console.log("in newMessage", lastMessages)
-  wsServer.to("messenger").emit("newMessage", message)
+  try {
+    // este check se debe hacer en el model
+    if (!!msg.body) {
+      const message = await mm.addMessage(msg)
+      wsServer.to("messenger").emit("newMessage", message)
+    }
+  } catch (err) {
+    console.log(err)   
+  }
 }

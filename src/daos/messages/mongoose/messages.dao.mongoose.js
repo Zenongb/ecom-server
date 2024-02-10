@@ -13,7 +13,7 @@ export default class MessagesDaoMongoose {
   }
 
   async readMany(query) {
-    return await this.model.find(query).lean()
+    return await this.model.find(query).lean().sort({timestamp: 1}).limit(20);
   }
 
   async updateOne(query, data) {

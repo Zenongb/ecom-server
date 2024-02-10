@@ -1,10 +1,6 @@
-import { wsServer } from "../main.js";
-import { connectionSocket } from './products.socket.js'
 import { productsConnection } from "./products.socket.js";
 import { messengerConnection, newMessage } from "./messenger.socket.js";
 
-// conectar sockets
-wsServer.on("connect", initClient)
 
 export const initClient = socket => {
   socket.on("join", room => {

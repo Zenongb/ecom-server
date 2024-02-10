@@ -18,21 +18,7 @@ const addProdForm = document.getElementById("addProduct");
 
 addProdForm.addEventListener("submit", event => {
   event.preventDefault();
-  const prodSubmit = {};
-  for (let formChild of addProdForm.childNodes) {
-    // console.log(formChild)
-    if (formChild.nodeName === "LABEL") {
-      // encontramos una label
-      // console.log(formChild)
-      const key = formChild.lastChild.attributes.name.value;
-      const value = formChild.lastChild.value;
-      prodSubmit[key] = value;
-      if (key === "status") {
-        prodSubmit[key] = formChild.lastChild.checked
-        console.log(prodSubmit[key]);
-      }
-    }
-  }
+  const prodSubmit = new FormData(addProdForm)
   console.log("sending form");
   console.log(prodSubmit);
   let res = fetch("/api/products", {
@@ -40,7 +26,7 @@ addProdForm.addEventListener("submit", event => {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(prodSubmit),
+    body: JSON.stringify(Object.fromEntries(prodSubmit.entries())),
   })
     .then(res => res.json())
     .catch(err => {

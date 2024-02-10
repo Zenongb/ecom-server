@@ -14,8 +14,6 @@ socket.on("connect", async () => {
 });
 
 socket.on("getMessages", messages => {
-  console.log("nuevos mensajes");
-  console.log(messages);
   for (let msg of messages) {
     console.log(msg)
     renderMessage(msg)
@@ -29,11 +27,13 @@ socket.on("newMessage", message => {
 chatForm.addEventListener("submit", event => {
   event.preventDefault()
   const message = messageInput.value
-  socket.emit("newMessage", {
-    user: user,
-    body: message
-  })
-  chatForm.reset()
+  if (message !== undefined && message !== null) {
+    socket.emit("newMessage", {
+      user: user,
+      body: message
+    })
+    chatForm.reset()
+  }
 })
 
 const renderMessage = msg => {

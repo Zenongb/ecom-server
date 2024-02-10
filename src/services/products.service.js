@@ -71,8 +71,8 @@ export default class ProductService {
     category,
     stock,
   }) {
-    // de la validacion de los datos se encarga la db
     try {
+      status = status === "on"? true : false
       // Es necesario el casteo de los elementos?
       const product = new Product({
         title,

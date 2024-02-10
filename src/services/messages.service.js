@@ -1,4 +1,4 @@
-export default class CartService {
+export default class MessageService {
 
   constructor(messagesDao) {
     this.dao = messagesDao
@@ -6,7 +6,7 @@ export default class CartService {
 
   async getMessages() {
     try {
-      const messages = await this.find();
+      const messages = await this.dao.readMany();
       return messages;
     } catch (err) {
       throw new Error("error al buscar los mensajes", { cause: err });
@@ -15,7 +15,7 @@ export default class CartService {
 
   async getLastMessages() {
     try {
-      const messages = await this.find().sort({timestamp: 1}).limit(20);
+      const messages = await this.dao.readMany()
       return messages;
     } catch (err) {
       throw new Error("error al buscar los mensajes", { cause: err });
@@ -24,7 +24,7 @@ export default class CartService {
 
   async getMessageById(mid) {
     try {
-      const messages = await this.findById(mid)
+      const messages = await this.dao.readOne({_id: mid})
       return messages;
     } catch (err) {
       throw new Error("error al buscar los mensajes", { cause: err });
@@ -33,9 +33,9 @@ export default class CartService {
 
   async addMessage(msgData) {
     try {
-      const creationStatus = await this.create(msgData);
-      console.log(creationStatus);
-      return creationStatus;
+      const createdMsg = await this.dao.create(msgData);
+      console.log(createdMsg);
+      return createdMsg;
     } catch (err) {
       throw new Error("error al crear mensaje", { cause: err });
     }

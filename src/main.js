@@ -2,6 +2,7 @@ import { Server } from "socket.io"
 
 import { app } from './app/app.js'
 import { closeDb, connectDb } from "./database/mongodb.database.js"
+import { initClient } from "./sockets/index.socket.js"
 
 import { PORT } from "./config.js"
 
@@ -14,7 +15,8 @@ const httpServer = app.listen(PORT, () => {
 
 // instanciar websockets server
 export const wsServer = new Server(httpServer)
-
+// conectar sockets
+wsServer.on("connect", initClient)
 
 // pro un error indefinido con la store de connect mongo, voy a deprecar temporal
 // mente el gracefull shutdown
