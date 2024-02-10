@@ -1,7 +1,7 @@
 import { PRODUCTS_PER_PAGE } from "../config.js";
-import ProductManager from "../daos/models/product.model.js";
+import {productService} from "../services/index.service.js";
 
-const pm = ProductManager;
+const pm = productService;
 
 export const getController = async (req, res, next) => {
   try {
@@ -35,6 +35,7 @@ export const getController = async (req, res, next) => {
       sort,
       limit
     );
+    console.log("in getProducts", paginatedProducts)
     // calculamos las pages
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);
     const prevPage = page - 1 >= 0 ? page - 1 : null;

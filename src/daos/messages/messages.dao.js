@@ -1,10 +1,11 @@
-import MessageModelMongoose from "./mongoose/product.model.mongoose.js"
-import ProductDaoMongoose from "./mongoose/products.dao.mongoose.js"
+import MessageModelMongoose from "./mongoose/message.model.mongoose.js"
+import MessageDaoMongoose from "./mongoose/messages.dao.mongoose.js"
+import { MODE } from "../../config.js"
 
-let productsDao
+let messagesDao
 
 if (MODE === "online") {
-  productsDao = new ProductDaoMongoose(ProductModel)
+  messagesDao = new MessageDaoMongoose(MessageModelMongoose)
 }
 
-export default productsDao
+export default messagesDao

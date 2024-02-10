@@ -1,10 +1,9 @@
 import Cart from "../models/cart.model.js"
 
-export class CartService {
+export default class CartService {
 
-  constructor(cartsDao, productsService) {
+  constructor(cartsDao) {
     this.dao = cartsDao 
-    this.products = productsService
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -17,8 +16,8 @@ export class CartService {
   async addCart(products = undefined) {
     try {
       const cart = new Cart({products})
-      const createdStatus = await this.dao.create(cart);
-      return createdStatus;
+      const createdCart = await this.dao.create(cart.toPOJO());
+      return createdCart;
     } catch (err) {
       throw new Error("Error al intentar aniadir el carrito", { cause: err });
     }
@@ -27,20 +26,15 @@ export class CartService {
   // ADD PROD
   async updateProduct(cid, pid, amt) {
     try {
-      const cart = await this.dao.findById(cid)
-      console.log("cart is ", cart)
-      if (cart === null) {
+      const pojoCart = await this.dao.readOne({ _id: cid, populated: false})
+      if (pojoCart === null) {
         throw new Error("ENOENT");
       }
-      const pIdx = cart.products.findIndex(p => p.pid === pid)
-      // caso de que no exista el prod count
-      if (pIdx < 0) cart.products.push({pid: pid, quantity: amt})
-      // caso de que exista
-      else cart.products[pIdx].quantity = amt
-      await cart.save()
-      console.log("cart is:", cart);
+      const cart = new Cart(pojoCart)
+      cart.updateProducts({pid, quantity: amt})
+      await this.dao.updateOne({_id: cid}, cart.toPOJO())
       // checkeamos los resultados del update
-      return cart;
+      return cart.toPOJO();
     } catch (err) {
       // error handling
       if (err.message === "ENOENT") {
@@ -59,17 +53,18 @@ export class CartService {
   }
 
   // DELETE PROD
-  async removeProduct(cid, pid) {
+  async removeProducts(cid, pids) {
     try {
-      const updRes = await this.updateOne({ _id: cid }, { $pull: { pid: pid } });
-      console.log("update result is:", updRes);
-      // checkeamos los resultados del update
-      if (updRes.matchedCount === 0) {
-        throw new Error("ENOENT");
-      }
+      const cartPojo = await this.dao.readOne({id: cid, populated: false})
+      const cart = new Cart(cartPojo)
+      cart.removeProducts(pids)
+      return await this.dao.updateOne(
+        { _id: cid},
+        cart.toPOJO()
+      )
     } catch (err) {
       // error handling
-      if (err.message === "ENOENT") {
+      if (err.code === "ENOENT") {
         // handle ENOENT
         // tiramos el error apropiadamente
         const noCartErr = new Error(`No existe carrito con id ${cid}`);
@@ -88,18 +83,12 @@ export class CartService {
   // GET BY ID
   async getCartById(cid) {
     try {
-      const cart = await this.findById(cid, {
-        _id: 1,
-        "products.pid": 1,
-        "products.quantity": 1,
-      }).populate("products.pid");
-      if (!cart) {
-        // caso de que no exista el carrito
-        throw new Error("ENOENT"); // un workaround para agarrar el error
-      }
-      return cart;
+      const cartData = await this.dao.readOne({_id: cid}) 
+      console.log("en cartById service, cartDat is", cartData)
+      const cart = new Cart(cartData)
+      return cart.toPOJO();
     } catch (err) {
-      if (err.message === "ENOENT") {
+      if (err.code === "ENOENT") {
         // handle ENOENT
         // tiramos el error apropiadamente
         const noCartErr = new Error(`No existe carrito con id ${cid}`);
@@ -116,10 +105,6 @@ export class CartService {
   }
 
   async bulkUpdateProducts(cid, pids) {
-    // KNOWN BUG: si el carrito ya tiene productos y se repiete alguna de las pids
-    // la operacion va a generar una nueva instancia del producto en el carrito.
-    // Tambien esta operacion no es idempotente, ya que no tengo forma de checkear
-    // la unicidad de la operacion
     try {
       // transformar el array de pids(String) en objects
       const parsedPids = [];
@@ -131,13 +116,9 @@ export class CartService {
           parsedPids[prodIdx].quantity++;
         }
       }
-      const updateRes = await this.updateOne(
-        { _id: cid },
-        { $push: { products: { $each: parsedPids } } }
-      );
-      console.log("in manager");
-      console.log(updateRes);
-      return updateRes;
+      const cart = new Cart(await this.dao.readOne({id: cid, populated: false}))
+      cart.updateProducts(parsedPids)
+      return await this.dao.updateOne({_id: cart.id}, cart.toPOJO())
     } catch (err) {
       if (err.name === "CastError") {
         const errBadReq = new Error("Array de productos malformado");
@@ -150,19 +131,14 @@ export class CartService {
 
   async removeAllProducts(cid) {
     try {
-      const updRes = await this.updateOne(
-        { _id: cid },
-        {
-          $set: { products: [] },
-        }
-      );
-      console.log(updRes);
-      if (updRes.matchedCount === 0) {
-        throw new Error("ENOENT");
-      }
+      const cartData = await this.dao.readOne({_id: cid, populated: false})
+      const cart = new Cart(cartData)
+      cart.deleteAllProducts()
+      console.log("in delete all",cart)
+      return await this.dao.updateOne({_id: cid}, cart.toPOJO())
     } catch (err) {
       // error handling
-      if (err.message === "ENOENT") {
+      if (err.code === "ENOENT") {
         // handle ENOENT
         // tiramos el error apropiadamente
         const noCartErr = new Error(`No existe carrito con id ${cid}`);
@@ -174,7 +150,7 @@ export class CartService {
         wrongIdErr.code = "EWRONGID";
         throw wrongIdErr;
       }
-      throw new Error("error al borrar todos los productos");
+      throw new Error("error al borrar todos los productos", {cause: err});
     }
   }
 }

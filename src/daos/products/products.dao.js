@@ -1,6 +1,8 @@
 import ProductModel from "./mongoose/product.model.mongoose.js"
 import ProductDaoMongoose from "./mongoose/products.dao.mongoose.js"
 
+import { MODE } from "../../config.js"
+
 let productsDao
 
 if (MODE === "online") {

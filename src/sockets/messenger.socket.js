@@ -1,7 +1,7 @@
 import { wsServer } from "../app.js"
-import msgManager from "../dao/models/message.model.js"
+import {msgService} from "../services/index.service.js"
 
-const mm = msgManager
+const mm = msgService
 
 // planeo hacer que el sistema de chat funcione unicamente desde sockets,
 // principalmente porque me interesa aprender mas del uso de wss y socket.io.
@@ -13,11 +13,13 @@ const mm = msgManager
 
 export const messengerConnection = async socket => {
   const lastMessages = await mm.getLastMessages()
+  console.log("in messengerConnection", lastMessages)
   socket.emit("getMessages", lastMessages)
   
 }
 
 export const newMessage = async (msg) => {
   const message = await mm.addMessage(msg)
-  wsServer.to("messager").emit("newMessage", message)
+  console.log("in newMessage", lastMessages)
+  wsServer.to("messenger").emit("newMessage", message)
 }

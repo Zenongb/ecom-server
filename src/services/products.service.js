@@ -1,8 +1,12 @@
+import Product from "../models/product.model.js"
+
+import { PRODUCTS_PER_PAGE } from "../config.js"
 
 export default class ProductService {
   constructor(productDao) {
     this.dao = productDao
   }
+
   async getProducts(query, page, sort, limit = PRODUCTS_PER_PAGE) {
     // parseamos el query para pasarselo al driver
     try {
@@ -33,30 +37,27 @@ export default class ProductService {
           $limit: limit
         }
       )
-      const aggrRes = await this.aggregate([{
-        // para poder conseguir el num de paginas al mismo tiempo de conseguir los
-        // resultados usamos una agrregation pipeline con el stage $facet para hacer
-        // multiples agregaciones en un solo stage
-        $facet: {
-          paginatedProducts: paginationPipeline,
-          totalCount: [
-            // sumamos los resultados
-            {$match: searchQuery},
-            {$count: 'totalCount'}
-          ]
-        }}])
-      return aggrRes[0];
+      const aggrRes = await this.dao.readPaginated(
+        paginationPipeline,
+        searchQuery
+      )
+      return aggrRes
     } catch (err) {
-      throw new Error("Error al buscar los productos", { cause: err });
+      const outErr = new Error("Error al buscar los productos", { cause: err });
+      if (err.code !== undefined || err.code !== null) outErr.code = err.code
+      throw outErr
     }
   }
 
   async getProductById(pid) {
     try {
-      const product = this.findById(pid);
-      return product;
+      const prodData = await this.dao.readOne({_id: pid})
+      const product = new Product(prodData)
+      return product.toPOJO();
     } catch (err) {
-      throw new Error("Error al retribuir producto", { cause: err });
+      const outErr = new Error("Error al retribuir producto", { cause: err });
+      if (err.code !== undefined || err.code !== null) outErr.code = err.code
+      throw outErr
     }
   }
 
@@ -73,7 +74,7 @@ export default class ProductService {
     // de la validacion de los datos se encarga la db
     try {
       // Es necesario el casteo de los elementos?
-      const createdStatus = await this.create({
+      const product = new Product({
         title,
         description,
         price,
@@ -83,7 +84,7 @@ export default class ProductService {
         category,
         stock,
       });
-      return createdStatus;
+      return await this.dao.create(product.toPOJO())
     } catch (err) {
       // handle error de parametros faltantes y pasarlo al controlador
       if (err.code === "MISSINGPARAMS") {
@@ -93,47 +94,48 @@ export default class ProductService {
         errMissingParams.code = "EBADREQ";
         throw errMissingParams;
       }
-      throw new Error("Error al crear el producto", { cause: err });
+      const outErr = new Error("Error al crear el producto", { cause: err });
+      if (err.code !== undefined || err.code !== null) outErr.code = err.code
+      throw outErr
     }
   }
 
-  async updateProduct(update) {
+  async updateProduct(id, update) {
     try {
-      console.log("update is", update)
-      delete update.id
-      const updatedProduct = await this.findOneAndUpdate(
-        { _id: update.id },
-        {
-          $set: {
-            ...update,
-          },
-        },
-        {
-          new: true,
-        }
+      const prod = new Product(await this.dao.readOne({_id: id}))
+      let updProd = {
+        ...prod.toPOJO(),
+        ...update
+      }
+      updProd = new Product(updProd)
+      const updatedProduct = await this.dao.updateOne(
+        { _id: id },
+        updProd.toPOJO(),
       );
       return updatedProduct;
     } catch (err) {
-      // TODO: handlear err.name=StrictModeError y demas (ENOENT, etc)
-      throw new Error(`Error al actualizar Producto ${update.id}`, {
+      const outErr = new Error(`Error al actualizar Producto ${update.id}`, {
         cause: err,
       });
+      if (err.code !== undefined || err.code !== null) outErr.code = err.code
+      throw outErr
     }
   }
 
   async deleteProduct(pid) {
     try {
-      const deleteResult = await this.deleteOne({ _id: pid });
+      const deleteResult = await this.dao.deleteOne({ _id: pid });
       if (deleteResult.matchedCount === 0) {
         const errNoProd = new Error(`No se encontro producto con id ${id}`);
         errNoProd.code = "ENOENT";
         throw errNoProd;
       }
-      console.log(deleteResult);
     } catch (err) {
-      throw new Error(`Error al eliminar el Producto ${products[prodIndex].id}`, {
+      const outErr = new Error(`Error al eliminar el Producto ${pid}`, {
         cause: err,
       });
+      if (err.code !== undefined || err.code !== null) outErr.code = err.code
+      throw outErr
     }
   }
 }

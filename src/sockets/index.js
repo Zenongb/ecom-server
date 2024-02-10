@@ -1,12 +1,10 @@
-<<<<<<< HEAD
 import { wsServer } from "../main.js";
 import { connectionSocket } from './products.socket.js'
+import { productsConnection } from "./products.socket.js";
+import { messengerConnection, newMessage } from "./messenger.socket.js";
 
 // conectar sockets
-wsServer.on("connect", connectionSocket)
-=======
-import { productsConnection } from "./products.socket.js";
-import { messengerConnection, newMessage } from "./messages.socket.js";
+wsServer.on("connect", initClient)
 
 export const initClient = socket => {
   socket.on("join", room => {
@@ -21,4 +19,3 @@ export const initClient = socket => {
   })
   socket.on("newMessage", msg => newMessage(msg))
 };
->>>>>>> chat-implementation

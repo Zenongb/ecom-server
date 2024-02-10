@@ -1,4 +1,4 @@
-import { notNull } from "../../../utils/lib.js"
+import { notNull } from "../utils/lib.js"
 import { randomUUID } from "node:crypto"
 
 export default class Product {
@@ -19,7 +19,8 @@ export default class Product {
     stock,
     category,
     status=true,
-    id=randomUUID()
+    id=randomUUID(),
+    _id=undefined,
   }) {
     // check de nullishness
     switch (true) {
@@ -35,7 +36,7 @@ export default class Product {
         throw errMissingParams
     }
     // check de id para cuando se "crean" productos leidos
-    this.#id = id
+    this.#id = _id !== undefined? _id : id
     this.title = notNull(title)
     this.description = description
     this.price = notNull(price)

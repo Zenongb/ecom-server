@@ -4,12 +4,13 @@ import { randomUUID } from "node:crypto"
 export default class Cart{
   #products
   #id
-  constructor({products, id=randomUUID()}) {
-    this.#id = id
+  constructor({products,_id=undefined, id=randomUUID()}) {
+    this.#id = !!_id? _id : id
     // check si products tiene el formato especificado
     if (products === undefined || products === null) { // caso de que no se pase un products
       this.#products = []
     } else if (Array.isArray(products)) { // caso que products sea array
+      console.log("in cart constructor, products",products)
       this.#products = products.map(p => new CartProduct(p))
     } else { // Si productos no es array
       throw new Error("Productos no tiene el formato especoficado")
@@ -26,21 +27,43 @@ export default class Cart{
   }
 
   getProdIdx(pid) {
-    return this.#products.findIndex(p=> p.pid === pid)
+    return this.#products.findIndex(p => p.pid === pid )
   }
 
-  addProducts(newPids) {
+  addProducts(newPids, amt) {
     const pids = Array.isArray(newPids)? newPids : [ newPids ]
     for (const newPid of pids) {
-      let prodIndex = this.#products.findIndex(cp => cp.pid === newPid)
+      let prodIndex = this.getProdIdx(newPid)
+      console.log("in addProducts, prodIndex", prodIndex)
       // aniadir un producto nuevo
       if (prodIndex < 0) {
-        this.#products.push(new CartProduct({pid: newPid}))
+        const cp = new CartProduct({pid: newPid, quantity:amt})
+        this.#products.push(cp)
       } else { // el producto ya existe
-        this.#products[prodIndex].add()
+        this.#products[prodIndex].quantity = quantity
       }
     }
   }
+
+  updateProducts(prods) {
+    // prods tiene el tipo [{pid: str, quantity: num}] o {pid: str, quantity: num}
+    if (!Array.isArray(prods)) prods = [prods]
+    for (const p of prods) {
+      const pIdx = this.getProdIdx(p.pid)
+      // si no existe se aniade
+      if (pIdx < 0) {
+        this.addProducts(p.pid, p.quantity);
+        return;
+      } else {
+        this.#products[pIdx].quantity = p.quantity
+      }
+      // check si quantity es 0, en tal caso borrar el CartProduct
+      if (p.quantity === 0) {
+        this.deleteProduct(p.pid)
+        return 
+      }
+    }
+  } 
 
   removeProducts(prodsToRm) {
     // prodsToRm puede tener tres formas,
@@ -56,13 +79,14 @@ export default class Cart{
     }
   }
 
-  deleteProduct(pid) {
-    const pIdx = this.getProdIdx(pid)
-    if (pIdx < 0) {
-      const err = new Error(`No hay producto de id: ${pid}`)
-      err.code = "ENOENT"
-      throw err
-    } else {
+  deleteProduct(pids) {
+    if (typeof pids === "string") {
+      const pIdx = this.getProdIdx(pids)
+      this.#products.splice(pIdx, 1)
+      return 
+    }
+    for (const pid in pids) {
+      const pIdx = this.getProdIdx(pid)
       this.#products.splice(pIdx, 1)
     }
   }
@@ -72,10 +96,9 @@ export default class Cart{
   }
 
   toPOJO() {
-    const POJOprods = this.#products.map(cp => cp.toPOJO())
     return {
       id: this.#id,
-      products: POJOprods
+      products: this.#products.map(cp => cp.toPOJO())
     }
   }
 }
@@ -84,6 +107,7 @@ class CartProduct{
   #pid
   #quantity
   constructor({pid, quantity=1}) {
+    console.log("in CartProduct constructor, pid is", pid)
     this.#pid = pid
     // check si quantity es num
     quantity = castNum(quantity)

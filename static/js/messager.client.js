@@ -3,12 +3,13 @@ const chatForm = document.getElementById("newMessage");
 const messageInput = document.getElementById("message-input")
 
 const user = prompt("Nombre de usuario!");
+
 console.log(`hola ${user}!`);
 
 const socket = io();
 socket.on("connect", async () => {
   console.log("conectado");
-  await socket.emit("join", "messager");
+  await socket.emit("join", "messenger");
   socket.emit("joinedRoom");
 });
 

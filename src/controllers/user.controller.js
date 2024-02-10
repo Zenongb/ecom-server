@@ -1,9 +1,9 @@
-import userManager from "../daos/models/user.model.js";
+import {userService} from "../services/index.service.js";
 
 export const register = async (req, res, next) => {
   const userInfo = req.body;
   try {
-    const registerResult = await userManager.registerUser(userInfo);
+    const registerResult = await userService.registerUser(userInfo);
     return res.status(201).json({
       status: "success",
       payload: registerResult,
@@ -18,7 +18,7 @@ export const login = async (req, res, next) => {
   const userInfo = req.body;
   try {
     // logueamos al usuario
-    const user = await userManager.loginUser(userInfo);
+    const user = await userService.loginUser(userInfo);
     // activamos la sesion del usuario
     req.login(
       {

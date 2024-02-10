@@ -1,7 +1,7 @@
 import { wsServer } from "../main.js";
-import productManager from "../daos/models/product.model.js";
+import { productService } from "../services/index.service.js";
 
-const pm = productManager
+const pm = productService
 
 export const connectionSocket = async socket => {
   const { paginatedProducts, _ } = await pm.getProducts({}, 0, "asc")

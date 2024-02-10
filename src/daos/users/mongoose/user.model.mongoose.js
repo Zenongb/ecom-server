@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto"
 import mongoose from "mongoose";
 
 const userCollection = "users"
@@ -33,7 +34,7 @@ const userSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
-    loginHist: [
+    login_hist: [
       {
         type: Date,
         default: new Date(),

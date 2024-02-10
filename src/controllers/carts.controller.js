@@ -1,7 +1,7 @@
-import CartManager from "../daos/models/cart.model.js";
+import {cartService} from "../services/index.service.js";
 import { castNum } from "../utils/lib.js";
 
-const cm = CartManager;
+const cm = cartService;
 
 export const getByIdController = async (req, res, next) => {
   const cid = req.params.cid;
@@ -35,7 +35,6 @@ export const createCartController = async (req, res, next) => {
 export const updateProductController = async (req, res, next) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
-  
   let amt = req.body
   amt = castNum(amt);
   try {
@@ -97,7 +96,7 @@ export const removeProductController = async (req, res, next) => {
   }
 };
 
-export const removeAllProductsController = async (req, res) => {
+export const removeAllProductsController = async (req, res, next) => {
   const cid = req.params.cid;
   try {
     await cm.removeAllProducts(cid);

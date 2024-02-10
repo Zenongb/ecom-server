@@ -1,9 +1,9 @@
 
 import CartModelMongoose from "./mongoose/cart.model.mongoose.js"
-import CartDaoMongoose from "./mongoose/cart.dao.mongoose.js"
-import CartModelFilesystem from "./filesystem/cart.model.filesystem.js"
-import CartDaoFilesystem from "./filesystem/cart.dao.filesystem.js"
+import CartDaoMongoose from "./mongoose/carts.dao.mongoose.js"
+import CartDaoFilesystem from "./filesystem/carts.dao.filesystem.js"
 
+import {CARTS_PATH, MODE} from "../../config.js"
 
 
 let cartsDao
@@ -11,7 +11,7 @@ let cartsDao
 if (MODE === "online") {
   cartsDao = new CartDaoMongoose(CartModelMongoose)
 } else {
-  cartsDao = new CartDaoFilesystem()
+  cartsDao = new CartDaoFilesystem(CARTS_PATH)
 }
 
 export default cartsDao
