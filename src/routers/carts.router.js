@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { ROLE_VALUES } from "../config.js";
 
 import {
   getByIdController,
@@ -8,6 +9,7 @@ import {
   bulkUpdateController,
   removeAllProductsController,
 } from "../controllers/carts.controller.js";
+import { auth } from "../middlewares/authorization.middleware.js";
 
 export const cartsRouter = Router();
 
@@ -19,10 +21,26 @@ cartsRouter.post("/", createCartController);
 
 // UPDATE CART
 // UPDATE PRODUCT
-cartsRouter.put("/:cid/products/:pid", updateProductController);
+cartsRouter.put(
+  "/:cid/products/:pid",
+  auth(ROLE_VALUES._USER),
+  updateProductController
+);
 // ADD MULTIPLE PRODUCTS
-cartsRouter.put("/:cid", bulkUpdateController)
+cartsRouter.put(
+  "/:cid",
+  auth(ROLE_VALUES._USER),
+  bulkUpdateController
+)
 // REMOVE PRODUCT
-cartsRouter.delete("/:cid/products/:pid", removeProductController);
+cartsRouter.delete(
+  "/:cid/products/:pid",
+  auth(ROLE_VALUES._USER),
+  removeProductController
+);
 // REMOVE ALL PRODUCTS
-cartsRouter.delete("/:cid/products", removeAllProductsController);
+cartsRouter.delete(
+  "/:cid/products",
+  auth(ROLE_VALUES._USER),
+  removeAllProductsController
+);

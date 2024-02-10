@@ -1,7 +1,7 @@
 export const MODE = "online"
 
-export const AUTH_ONLY_TAG = "AUTH_ONLY"
 export const ROLE_VALUES = {
+  _AUTH_ONLY: "auth",
   _SUPER_USER: "super",
   _ADMIN: "admin",
   _USER: "user",
