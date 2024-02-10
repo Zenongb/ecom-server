@@ -1,5 +1,12 @@
 export const MODE = "online"
 
+export const AUTH_ONLY_TAG = "AUTH_ONLY"
+export const ROLE_VALUES = {
+  _SUPER_USER: "super",
+  _ADMIN: "admin",
+  _USER: "user",
+}
+
 // variable del path de productos
 export const PRODUCTS_PATH = "./data/products.json"; // cambiar a path absoluto
 // variable de path de carrito
@@ -9,8 +16,6 @@ export const CARTS_PATH = "./data/carts.json"; // cambiar a path absoluto
 export const PRODUCTS_PER_PAGE = 10
 
 export const PORT = 8080
-
-export const AUTH_ONLY_TAG = "AUTH_ONLY"
 
 // admin email
 export const ADMIN_USER = {

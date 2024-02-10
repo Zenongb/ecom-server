@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { ROLE_VALUES } from "../config.js";
 
 import {comparePwd} from '../utils/hash.js'
 import {notNull} from '../utils/lib.js'
@@ -14,7 +15,7 @@ export default class User {
     password,
     first_name,
     last_name,
-    role,
+    role=ROLE_VALUES._USER,
     cart, 
     age,
     login_hist,
