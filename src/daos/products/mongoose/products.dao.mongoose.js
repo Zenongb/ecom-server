@@ -15,7 +15,7 @@ export default class ProductDaoMongoose {
   }
 
   async readMany(query) {
-    return await this.model.find(query).lean()
+    return await this.model.find(set_id(query)).lean()
   }
   async readPaginated(paginationPipeline, query) {
     const res = await this.model.aggregate([{

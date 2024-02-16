@@ -2,8 +2,9 @@ import Cart from "../models/cart.model.js"
 
 export default class CartService {
 
-  constructor(cartsDao) {
+  constructor(cartsDao, productsService) {
     this.dao = cartsDao 
+    this.productsService = productsService
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -30,6 +31,12 @@ export default class CartService {
       if (pojoCart === null) {
         throw new Error("ENOENT");
       }
+      // check si existe el producto a aniadir
+      if (!await this.productService.checkProducts(pid)) {
+        const badProdErr = new Error(`No existe producto de id ${pid}`)
+        badProdErr.code = "EBADREQ"
+        throw badProdErr
+      }
       const cart = new Cart(pojoCart)
       cart.updateProducts({pid, quantity: amt})
       await this.dao.updateOne({_id: cid}, cart.toPOJO())
@@ -37,7 +44,10 @@ export default class CartService {
       return cart.toPOJO();
     } catch (err) {
       // error handling
-      if (err.message === "ENOENT") {
+      if (err.code === "EBADREQ") {
+        // TODO: limpiar
+        throw err
+      } else if (err.message === "ENOENT") {
         // handle ENOENT, tiramos el error apropiadamente
         const noCartErr = new Error(`No existe carrito con id ${cid}`);
         noCartErr.code = "ENOENT";
@@ -106,6 +116,12 @@ export default class CartService {
 
   async bulkUpdateProducts(cid, pids) {
     try {
+      // check si existe el producto a aniadir
+      if (!await this.productService.checkProducts(pids)) {
+        const badProdErr = new Error("Algunos productos no existen")
+        badProdErr.code = "EBADREQ"
+        throw badProdErr
+      }
       // transformar el array de pids(String) en objects
       const parsedPids = [];
       for (let pid of pids) {
@@ -120,7 +136,9 @@ export default class CartService {
       cart.updateProducts(parsedPids)
       return await this.dao.updateOne({_id: cart.id}, cart.toPOJO())
     } catch (err) {
-      if (err.name === "CastError") {
+      if (err.code === "EBADREQ") {
+        throw err
+      } else if (err.name === "CastError") {
         const errBadReq = new Error("Array de productos malformado");
         errBadReq.code = "EBADREQ";
         throw errBadReq;

@@ -1,11 +1,24 @@
 import User from "../models/user.model.js"
-import { hashPwd } from "../utils/hash.js";
+import { hashPwd, comparePwd } from "../utils/hash.js";
 
 import { ADMIN_USER } from "../config.js";
 
 export default class UserService {
   constructor(usersDao) {
     this.dao = usersDao
+  }
+
+  async getUser(userId) {
+    try {
+      const userData = this.dao.readOne({ _id: userId, populate: true })
+      console.log(" in getUser, user is", userData)
+      const user = new User(userData)
+      return user.toPOJO() 
+    } catch (err) {
+      const outErr = new Error("Error al bucar el usuario", { cause: err })
+      outErr.code = err?.code
+      throw outErr
+    }
   }
 
   async registerUser(user) {
@@ -33,7 +46,7 @@ export default class UserService {
         errNotFound.code = "ENOENT"
         throw errNotFound
       }
-      console.log('userdata is', userData)
+      console.log("userData is", userData )
       const user = new User(userData)
       console.log(user.toPOJO(true))
       // checkear si existe password
@@ -46,6 +59,7 @@ export default class UserService {
       }
       user.login_hist.push(Date.now());
       await this.dao.updateOne({_id: user.id}, user.toPOJO(true))
+      console.log('userdata is', user)
       return user.toPOJO()
     } catch (err) {
       // TODO: hacer prolijo

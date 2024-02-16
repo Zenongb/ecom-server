@@ -4,10 +4,10 @@ import { randomUUID } from "node:crypto"
 export default class Cart{
   #products
   #id
-  constructor({products,_id=undefined, id=randomUUID()}) {
+  constructor({products=undefined,_id=undefined, id=randomUUID()}) {
     this.#id = !!_id? _id : id
     // check si products tiene el formato especificado
-    if (products === undefined || products === null) { // caso de que no se pase un products
+    if (!!products) { // caso de que no se pase un products
       this.#products = []
     } else if (Array.isArray(products)) { // caso que products sea array
       console.log("in cart constructor, products",products)

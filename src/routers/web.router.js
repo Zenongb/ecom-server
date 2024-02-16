@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AUTH_ONLY_TAG } from "../config.js";
+import { ROLE_VALUES } from "../config.js";
 
 import { auth } from "../middlewares/authorization.middleware.js"
 
@@ -20,7 +20,7 @@ webRouter.get("/login", (_, res) => {
     })
 })
 
-webRouter.get("/products", auth(AUTH_ONLY_TAG), (_, res) => {
+webRouter.get("/products", auth(ROLE_VALUES._AUTH_ONLY), (_, res) => {
     res.render("products.handlebars", {
         title: "Productos",
         styles: "/static/css/products.style.css"
@@ -38,7 +38,7 @@ webRouter.get("/carts/:cid", (req, res) => {
 })
 
 
-webRouter.get("/realtimeProducts", (_, res) => {
+webRouter.get("/realtimeProducts", auth(ROLE_VALUES._ADMIN), (_, res) => {
     res.render("realtimeProducts.handlebars", {
         title: "Realtime Products",
         styles: "/static/css/realtimeProducts.style.css"

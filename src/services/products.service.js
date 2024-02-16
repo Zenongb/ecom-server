@@ -61,6 +61,35 @@ export default class ProductService {
     }
   }
 
+  async checkProducts(pids) {
+    let outBool = true
+    try {
+      if (typeof pids === "string") pids = [pids]
+      // TODO: Checkear el funcionamiento del find query de mongoose,
+      // para ver la forma en la que el query se resolveria.
+      // por ahora hacemos dos checks:
+      const daoOutput = await this.dao.readMany({ id: { $in: pids }})
+      // el primero es comparar la cantidad de items en el output con los del 
+      // input
+      if (daoOutput.length !== pids.length) {
+        console.log("en check products, los prods no coinciden en length")
+        outBool = false
+      }
+    } catch (err) {
+      // el segundo es checkear si el dao tiro el error ENOENT cuando no
+      // hay matches con el query
+      if (err.code === "ENOENT") {
+        console.log("en check products, dao tiro ENOENT err")
+        outBool = false
+      } else {
+        const outErr = new Error("Error al checkear productos", {cause: err})
+        if (err.code !== undefined || err.code !== null) outErr.code = err.code
+        throw outErr
+      }
+    }
+    return outBool
+  }
+
   async addProduct({
     title,
     description,

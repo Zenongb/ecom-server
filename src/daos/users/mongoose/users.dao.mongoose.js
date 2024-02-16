@@ -9,12 +9,20 @@ export default class UserDaoMongoose {
     return await this.model.create(data)
   }
   async readOne(query) {
-    return await this.model.findOne(set_id(query)).lean()
+    let populate
+    if (!!query.populate) {
+      populate = query?.populate
+      delete query?.populate
+    }
+    const user = await this.model.findOne(set_id(query)).lean()
+    if (populate) await user.populate("cart")
+    return user
   }
 
   async readMany(query) {
     return await this.model.find(query).lean()
   }
+
   async updateOne(query, data) {
     return await this.model.findOneAndUpdate(
       set_id(query),

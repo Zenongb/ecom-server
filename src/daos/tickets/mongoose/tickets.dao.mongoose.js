@@ -1,7 +1,6 @@
-import { set_id, switchId } from "../../utils/mongoose.utils.js"
+import { set_id } from "../../utils/mongoose.utils.js"
 
-export default class CartsDaoMongoose {
-
+export default class TicketDaoMongoose {
   constructor(model) {
     this.model = model
   }
@@ -9,14 +8,10 @@ export default class CartsDaoMongoose {
   async create(data) {
     return await this.model.create(data)
   }
-
   async readOne(query) {
-    const populated = query?.populated
-    delete query.populated
-    if (populated === undefined) populated = true
-    const cart = await this.model.findOne(set_id(query)).lean()
-    if (populated) await cart.populate("products.pid")
-    return switchId(cart)
+    const user = await this.model.findOne(set_id(query)).lean()
+    if (populate) await user.populate("cart")
+    return user
   }
 
   async readMany(query) {
@@ -24,26 +19,21 @@ export default class CartsDaoMongoose {
   }
 
   async updateOne(query, data) {
-    delete data.id
     return await this.model.findOneAndUpdate(
       set_id(query),
-      { $set: data },
-      { new: true })
+      { $set: data }
+    ).lean()
   }
-
   async updateMany(query, data) {
     return await this.model.updateMany(
       set_id(query),
       { $set: data }
     )
   }
-
   async deleteOne(query) {
     throw new Error("Not implemented!")
   }
-
   async deleteMany(query) {
     throw new Error("Not implemented!")
   }
-  
 }

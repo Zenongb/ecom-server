@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import { ROLE_VALUES } from "../config.js";
 
+import Cart from "./cart.model.js"
+
 import {comparePwd} from '../utils/hash.js'
 import {notNull} from '../utils/lib.js'
 
@@ -16,7 +18,7 @@ export default class User {
     first_name,
     last_name,
     role=ROLE_VALUES._USER,
-    cart, 
+    cart="", 
     age,
     login_hist,
   }) {
@@ -26,7 +28,7 @@ export default class User {
       this.#email = notNull(email)
       this.first_name = notNull(first_name)
       this.last_name = notNull(last_name)
-      this.cart = cart
+      this.cart = typeof cart === "string"? cart : new Cart(cart)
       this.role = role
       this.age = age
       this.login_hist = login_hist
@@ -36,9 +38,27 @@ export default class User {
       throw outErr
     }
   }
+
+  get id() {
+    return this.#id
+  }
+
+  get password() {
+    return this.#pwd
+  }
+
   hasPwd() {
     return !!this.#pwd
   }
+
+  hasCart() {
+    return !!this.cart
+  }
+
+  hasCartObj() {
+    return !typeof this.cart === "string"
+  }
+
   async comparePwd(plainPwd) {
     return await comparePwd(plainPwd, this.#pwd)
   }
@@ -49,11 +69,12 @@ export default class User {
       email: this.#email,
       first_name: this.first_name,
       last_name: this.last_name,
-      cart: this.cart,
+      cart: typeof this.cart === "string"? this.cart : this.cart.toPOJO(),
       role: this.role,
       age: this.age,
       login_hist: this.login_hist
     }
+
     if (showPwd) out.password = this.#pwd
     return out
   }
