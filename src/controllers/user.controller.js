@@ -13,6 +13,37 @@ export const register = async (req, res, next) => {
   }
 };
 
+export const updateUserController = async (req, res, next) => {
+  const uid = req.params.uid
+  const updateData = req.body
+  console.log("updateData in controller is", updateData)
+  try {
+    const updUser = await userService.update(uid, updateData)
+    console.log("in controller, updateRes", updUser)
+    req.login(updUser,(err) => {
+      if (err) { return next(err); }
+    })
+    res.status(200).json({
+      status: "success",
+      payload: updUser
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
+export const getCurrentUserController = async (req, res, next) => {
+  try {
+    const userData = await userService.getUser(req.user.id)
+    res.status(200).json({
+      status: "success",
+      payload: userData
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 // DEPRECADO
 export const login = async (req, res, next) => {
   const userInfo = req.body;

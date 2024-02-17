@@ -23,13 +23,17 @@ export default class Product {
     _id=undefined,
   }) {
     // check de nullishness
-    switch (true) {
-      case !title:
-      case !description:
-      case !price:
-      case !code:
-      case !stock:
-      case !category:
+    switch (false) {
+      case !!title:
+        console.log("title")
+      case !!description:
+        console.log("description")
+      case !!price:
+        console.log("price")
+      case !!code:
+        console.log("code")
+      case !!category:
+        console.log("category")
         // agregar code a error para facilitar el mansaje al cliente
         const errMissingParams = new Error("Faltan parametros para crear Producto")
         errMissingParams.code = "MISSINGPARAMS"

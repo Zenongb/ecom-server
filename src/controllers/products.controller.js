@@ -35,7 +35,6 @@ export const getController = async (req, res, next) => {
       sort,
       limit
     );
-    console.log("in getProducts", paginatedProducts)
     // calculamos las pages
     const totalPages = Math.ceil(totalCount[0].totalCount / limit);
     const prevPage = page - 1 >= 0 ? page - 1 : null;
@@ -69,7 +68,6 @@ export const getController = async (req, res, next) => {
 
 export const getByIdController = async (req, res, next) => {
   let pid = req.params.pid;
-  console.log(`Searching for ${pid}`);
   try {
     const product = await pm.getProductById(pid);
     res.status(200).json({
@@ -84,8 +82,6 @@ export const getByIdController = async (req, res, next) => {
 // UPDATE
 export const postController = async (req, res, next) => {
   const np = req.body;
-  console.log("Creating new product");
-  console.log(np);
   try {
     const createResult = await pm.addProduct(np);
     return res.status(200).json({
@@ -99,9 +95,7 @@ export const postController = async (req, res, next) => {
 
 export const putController = async (req, res, next) => {
   const pid = req.params.pid;
-  console.log(`Updating ${pid}`);
   const updates = req.body;
-  console.log(`Updates are ${updates}`);
   try {
     await pm.updateProduct(pid, {
       ...updates,
@@ -118,7 +112,6 @@ export const putController = async (req, res, next) => {
 // DELETE
 export const deleteController = async (req, res, next) => {
   const pid = req.params.pid;
-  console.log(`Deleting ${pid}`);
   try {
     await pm.deleteProduct(pid);
     res.status(200).json({

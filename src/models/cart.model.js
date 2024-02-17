@@ -7,10 +7,9 @@ export default class Cart{
   constructor({products=undefined,_id=undefined, id=randomUUID()}) {
     this.#id = !!_id? _id : id
     // check si products tiene el formato especificado
-    if (!!products) { // caso de que no se pase un products
+    if (!!!products) { // caso de que no se pase un products
       this.#products = []
     } else if (Array.isArray(products)) { // caso que products sea array
-      console.log("in cart constructor, products",products)
       this.#products = products.map(p => new CartProduct(p))
     } else { // Si productos no es array
       throw new Error("Productos no tiene el formato especoficado")
@@ -34,7 +33,6 @@ export default class Cart{
     const pids = Array.isArray(newPids)? newPids : [ newPids ]
     for (const newPid of pids) {
       let prodIndex = this.getProdIdx(newPid)
-      console.log("in addProducts, prodIndex", prodIndex)
       // aniadir un producto nuevo
       if (prodIndex < 0) {
         const cp = new CartProduct({pid: newPid, quantity:amt})
@@ -107,7 +105,6 @@ class CartProduct{
   #pid
   #quantity
   constructor({pid, quantity=1}) {
-    console.log("in CartProduct constructor, pid is", pid)
     this.#pid = pid
     // check si quantity es num
     quantity = castNum(quantity)

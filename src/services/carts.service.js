@@ -2,9 +2,9 @@ import Cart from "../models/cart.model.js"
 
 export default class CartService {
 
-  constructor(cartsDao, productsService) {
+  constructor(cartsDao, productService) {
     this.dao = cartsDao 
-    this.productsService = productsService
+    this.productService = productService
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ export default class CartService {
   // ADD PROD
   async updateProduct(cid, pid, amt) {
     try {
-      const pojoCart = await this.dao.readOne({ _id: cid, populated: false})
+      const pojoCart = await this.dao.readOne({ _id: cid, populate: false})
       if (pojoCart === null) {
         throw new Error("ENOENT");
       }
@@ -65,7 +65,7 @@ export default class CartService {
   // DELETE PROD
   async removeProducts(cid, pids) {
     try {
-      const cartPojo = await this.dao.readOne({id: cid, populated: false})
+      const cartPojo = await this.dao.readOne({id: cid, populate: false})
       const cart = new Cart(cartPojo)
       cart.removeProducts(pids)
       return await this.dao.updateOne(
@@ -91,10 +91,9 @@ export default class CartService {
   }
 
   // GET BY ID
-  async getCartById(cid) {
+  async getCartById(cid, populate=false) {
     try {
-      const cartData = await this.dao.readOne({_id: cid}) 
-      console.log("en cartById service, cartDat is", cartData)
+      const cartData = await this.dao.readOne({_id: cid, populate}) 
       const cart = new Cart(cartData)
       return cart.toPOJO();
     } catch (err) {
@@ -132,7 +131,7 @@ export default class CartService {
           parsedPids[prodIdx].quantity++;
         }
       }
-      const cart = new Cart(await this.dao.readOne({id: cid, populated: false}))
+      const cart = new Cart(await this.dao.readOne({id: cid, populate: false}))
       cart.updateProducts(parsedPids)
       return await this.dao.updateOne({_id: cart.id}, cart.toPOJO())
     } catch (err) {
@@ -149,7 +148,7 @@ export default class CartService {
 
   async removeAllProducts(cid) {
     try {
-      const cartData = await this.dao.readOne({_id: cid, populated: false})
+      const cartData = await this.dao.readOne({_id: cid, populate: false})
       const cart = new Cart(cartData)
       cart.deleteAllProducts()
       console.log("in delete all",cart)

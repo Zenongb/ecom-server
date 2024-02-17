@@ -11,12 +11,11 @@ export default class CartsDaoMongoose {
   }
 
   async readOne(query) {
-    const populated = query?.populated
-    delete query.populated
-    if (populated === undefined) populated = true
-    const cart = await this.model.findOne(set_id(query)).lean()
-    if (populated) await cart.populate("products.pid")
-    return switchId(cart)
+    let populate = query?.populate
+    delete query.populate
+    const cart = await this.model.findOne(set_id(query))
+    if (populate) await cart.populate("products.pid")
+    return switchId(cart.toObject())
   }
 
   async readMany(query) {

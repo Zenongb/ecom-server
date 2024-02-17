@@ -1,3 +1,4 @@
+import Cart from "../models/cart.model.js"
 import User from "../models/user.model.js"
 import Product from "../models/product.model.js"
 import Ticket from "../models/ticket.model.js"
@@ -21,19 +22,20 @@ export default class TicketService {
       }
       // conseguimos el carrito populado para 
       // tener los datos de los productos
-      let cart
+      let cartData
       if (!user.hasCartObj()) {
-        cart = await this.cartsDao.readOne({_id: user.cart, populate: true})
+        cartData = await this.cartsDao.readOne({_id: user.cart, populate: true})
       } else {
-        cart = await this.cartsDao.readOne({_id: user.cart.id, populate: true})
+        cartData = await this.cartsDao.readOne({_id: user.cart.id, populate: true})
       }
+      const cart = new Cart(cartData)
       const ticketData = {
         purchaser: user.email,
         amount: 0
       }
       const notCompletedProducts = []
       // agregamos los costos mientras checkeamos y editamos el stock de los prods
-      for (let p in cart.products) {
+      for (let p of cart.products) {
         if (!!!p.pid) {
           notCompletedProducts.push(p)
           continue
@@ -60,7 +62,7 @@ export default class TicketService {
       await this.dao.create(ticket.toPOJO())
       // editamos el carrito
       cart.deleteAllProducts()
-      cart.updateProducts(notCompletedProducts.map(p => {
+      if (notCompletedProducts.length < 1) cart.updateProducts(notCompletedProducts.map(p => {
         return {pid: p.pid._id, quantity: p.quantity}
       }))
       await this.cartsDao.updateOne({_id: cart.id}, cart.toPOJO())

@@ -10,7 +10,7 @@ export default class UserService {
 
   async getUser(userId) {
     try {
-      const userData = this.dao.readOne({ _id: userId, populate: true })
+      const userData = await this.dao.readOne({ _id: userId, populate: true })
       console.log(" in getUser, user is", userData)
       const user = new User(userData)
       return user.toPOJO() 
@@ -64,6 +64,17 @@ export default class UserService {
     } catch (err) {
       // TODO: hacer prolijo
       throw err
+    }
+  }
+
+  async update(uid, data) {
+    try {
+      const res = await this.dao.updateOne({
+        _id: uid,
+      }, data)
+      return new User(res).toPOJO()
+    } catch (err) {
+      throw new Error("Error al actializar usuario", {cause: err})
     }
   }
 

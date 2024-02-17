@@ -72,14 +72,12 @@ export default class ProductService {
       // el primero es comparar la cantidad de items en el output con los del 
       // input
       if (daoOutput.length !== pids.length) {
-        console.log("en check products, los prods no coinciden en length")
         outBool = false
       }
     } catch (err) {
       // el segundo es checkear si el dao tiro el error ENOENT cuando no
       // hay matches con el query
       if (err.code === "ENOENT") {
-        console.log("en check products, dao tiro ENOENT err")
         outBool = false
       } else {
         const outErr = new Error("Error al checkear productos", {cause: err})

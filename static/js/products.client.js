@@ -12,8 +12,9 @@ const nextBtn = document.getElementById("next");
 const pageDisplay = document.getElementById("page-display");
 
 const addToCart = async pid => {
+  let cart = user.cart
   let cartProd = cart.products.find(p => p.pid === pid);
-  const putRes = await fetch(`/api/carts/${cart._id}/products/${pid}`, {
+  const putRes = await fetch(`/api/carts/${cart.id}/products/${pid}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +24,7 @@ const addToCart = async pid => {
     .then(res => res.json())
     .catch(err => console.log(err));
   cart = putRes.payload
-  console.log(cart)
+  user.cart = cart
 };
 
 // abort controllers para eliminar los event listeners para la page nav
@@ -95,7 +96,7 @@ const fetchProducts = uri => {
 // EVENT DECLARATIONS
 // go to cart event
 document.getElementById("goToCartPage").addEventListener("click", () => {
-  window.location.href = `/carts/${cart._id}`;
+  window.location.href = `/carts/${user.cart.id}`;
 });
 // form event
 filterForm.addEventListener("submit", event => {
@@ -113,19 +114,74 @@ filterForm.addEventListener("submit", event => {
   fetchProducts(uri);
 });
 
+const createCart = async () => {
+  // create cart
+  const cartRes = await fetch("api/carts", {
+    method: "POST",
+    "Content-Type": "application/json",
+  })
+    .then(res => res.json())
+    .catch(err => console.log(err));
+  const cart = cartRes.payload;
+  console.log("cart", cart);
+  return cart
+}
+
+const getCart = async (cid) => {
+  const res = await fetch(`api/carts/${cid}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then(res => res.json())
+    .catch(err => console.log(err));
+  const cart = res.payload
+  console.log(cart)
+  return cart
+}
+
+const updateUser = async (data) => {
+  console.log("in update user data is ", data)
+  const res = await fetch(`users/${user.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  })
+    .then(res => res.json())
+    .catch(err => console.log(err))
+  user = res.payload
+  console.log("updated user", user)
+}
+
 // MAIN EXECUTION
 
-// create cart
-const cartRes = await fetch("api/carts", {
-  method: "POST",
-  "Content-Type": "application/json",
+const userRes = await fetch("/current", {
+  method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
 })
   .then(res => res.json())
   .catch(err => console.log(err));
 
-// variable global de carrito
-var cart = cartRes.payload;
-console.log("cart", cart);
+var user = userRes.payload
+
+console.log("user is", user)
+console.log("user.cart", user.cart)
+if (!!!user.cart) {
+  console.log("user.cart null")
+  user.cart = await createCart()
+  await updateUser({cart: user.cart._id})
+} else if (typeof user.cart === "string") {
+  console.log("user.cart string")
+  const cart = await getCart(user.cart)
+  user.cart = cart
+} 
+
+console.log("user is", user)
 
 // primer fetch
 fetchProducts("api/products?query=&sort=");

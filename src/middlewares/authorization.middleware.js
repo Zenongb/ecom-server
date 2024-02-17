@@ -3,9 +3,8 @@ import { ROLE_VALUES } from "../config.js";
 export const auth = role => {
   return (req,res,next) => {
     const user = req.user
-    console.log("in auth middle", user)
     // check de super user
-    if (role === ROLE_VALUES._SUPER_USER) next()
+    if (user?.role === ROLE_VALUES._SUPER_USER) return next()
     if (role === ROLE_VALUES._AUTH_ONLY && req.isAuthenticated()) {
       // solo auth necesaria
       next()

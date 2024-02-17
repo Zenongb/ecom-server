@@ -39,6 +39,10 @@ export default class User {
     }
   }
 
+  get email() {
+    return this.#email
+  }
+
   get id() {
     return this.#id
   }

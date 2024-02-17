@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { register } from "../controllers/user.controller.js"
+import { register, getCurrentUserController, updateUserController } from "../controllers/user.controller.js"
 import passport from "passport"
 
 export const usersRouter = Router()
@@ -16,3 +16,7 @@ usersRouter.get("/githubCallback", passport.authenticate("githubLogin", {
   successRedirect: '/products',
   failureRedirect: '/login',
 }))
+
+usersRouter.get("/current", getCurrentUserController)
+
+usersRouter.put("/users/:uid", updateUserController)

@@ -8,7 +8,7 @@ export default class TicketDaoMongoose {
   async create(data) {
     return await this.model.create(data)
   }
-  async readOne(query) {
+  async readOne({ populate, ...query}) {
     const user = await this.model.findOne(set_id(query)).lean()
     if (populate) await user.populate("cart")
     return user

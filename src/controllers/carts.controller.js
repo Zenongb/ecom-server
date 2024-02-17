@@ -5,9 +5,11 @@ const cm = cartService;
 
 export const getByIdController = async (req, res, next) => {
   const cid = req.params.cid;
+  const populate = req.query.populate
+  console.log("in controller, cid, populate", cid, populate)
   try {
     // buscamos el carrito
-    const cart = await cm.getCartById(cid);
+    const cart = await cm.getCartById(cid, populate);
     // y lo devolvemos
     return res.status(200).json({
       satus: "success",
