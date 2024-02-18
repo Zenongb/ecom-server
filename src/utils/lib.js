@@ -1,4 +1,4 @@
-import { InvalidParamsError } from "../errors/errors"
+import { InvalidParamsError } from "../errors/errors.js"
 
 // Funcion de utilidad general
 export const notNull = (attrib) => {
