@@ -1,5 +1,6 @@
 import { PRODUCTS_PER_PAGE } from "../config.js";
 import {productService} from "../services/index.service.js";
+import { castNum } from "../utils/lib.js";
 
 const pm = productService;
 
@@ -122,3 +123,16 @@ export const deleteController = async (req, res, next) => {
     next(err)
   }
 };
+
+export const mockingProducts = (req, res, next) => {
+  const amt = castNum(req.query.amount, 50)
+  try {
+    const prods = pm.genMockProducts(amt)
+    return res.status(200).json({
+      status: "Success", 
+      payload: prods
+    })
+  } catch (err) {
+    next(err)   
+  }
+}

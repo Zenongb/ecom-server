@@ -4,6 +4,7 @@ import {
   deleteController,
   getByIdController,
   getController, 
+  mockingProducts, 
   postController,
   putController,
 } from "../controllers/products.controller.js"
@@ -20,6 +21,7 @@ productsRouter.post(
   auth(ROLE_VALUES._ADMIN),
   postController
 )
+
 
 // READ MULTI
 productsRouter.get("/", getController)

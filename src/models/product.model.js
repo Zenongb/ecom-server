@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker"
 import { InvalidParamsError } from "../errors/errors.js"
 
 import { notNull } from "../utils/lib.js"
@@ -5,7 +6,6 @@ import { randomUUID } from "node:crypto"
 
 export default class Product {
   // Clase contenedora de la informacion de los productos.
-
   // Variables privadas atadas a la entidad
   #id // var que no se puede modificar
   #code // var que no se puede modificar
@@ -92,5 +92,17 @@ export default class Product {
       status: this.status,
       category: this.category
     }
+  }
+  static genMockProduct() {
+    return new Product({
+      title: faker.word.words(2),
+      description: faker.word.words(10),
+      price: faker.number.int({ min: 20, max: 45000}),
+      thumbnail: "",
+      code: randomUUID(), // para hacerlo facil
+      stock: faker.number.int({ min: 20, max: 200}),
+      status: !!faker.number.int({min:0, max:1}),
+      category: faker.word.noun()
+    })
   }
 }

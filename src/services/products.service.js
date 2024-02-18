@@ -8,6 +8,15 @@ export default class ProductService {
     this.dao = productDao
   }
 
+  genMockProducts(amount) {
+    const outProducts = []
+    for (let i = 0; i < amount; i++) {
+      const prod = Product.genMockProduct()
+      outProducts.push(prod.toPOJO())
+    }
+    return outProducts
+  }
+
   async getProducts(query, page, sort, limit = PRODUCTS_PER_PAGE) {
     // parseamos el query para pasarselo al driver
     try {

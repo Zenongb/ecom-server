@@ -33,3 +33,12 @@ export class InvalidParamsError extends Error {
   }
 }
 
+export class TypedInvalidParamsError extends InvalidParamsError {
+  constructor(paramTypes, obj) {
+    // construimos el mensaje para pasarle al super
+    let msg = ""
+    
+
+    super(msg)
+  }
+}
