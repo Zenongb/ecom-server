@@ -1,6 +1,7 @@
 import Product from "../models/product.model.js"
 
 import { PRODUCTS_PER_PAGE } from "../config.js"
+import { NotFoundError } from "../errors/errors.js";
 
 export default class ProductService {
   constructor(productDao) {
@@ -43,9 +44,9 @@ export default class ProductService {
       )
       return aggrRes
     } catch (err) {
-      const outErr = new Error("Error al buscar los productos", { cause: err });
-      if (err.code !== undefined || err.code !== null) outErr.code = err.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error("Error al buscar los productos", { cause: err });
+      
     }
   }
 
@@ -55,9 +56,8 @@ export default class ProductService {
       const product = new Product(prodData)
       return product.toPOJO();
     } catch (err) {
-      const outErr = new Error("Error al retribuir producto", { cause: err });
-      if (err.code !== undefined || err.code !== null) outErr.code = err.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error("Error al retribuir producto", { cause: err });
     }
   }
 
@@ -81,7 +81,7 @@ export default class ProductService {
         outBool = false
       } else {
         const outErr = new Error("Error al checkear productos", {cause: err})
-        if (err.code !== undefined || err.code !== null) outErr.code = err.code
+        if (!!err.code) outErr.code = err.code
         throw outErr
       }
     }
@@ -113,17 +113,8 @@ export default class ProductService {
       });
       return await this.dao.create(product.toPOJO())
     } catch (err) {
-      // handle error de parametros faltantes y pasarlo al controlador
-      if (err.code === "MISSINGPARAMS") {
-        const errMissingParams = new Error(
-          "Faltan parametros para crear Producto"
-        );
-        errMissingParams.code = "EBADREQ";
-        throw errMissingParams;
-      }
-      const outErr = new Error("Error al crear el producto", { cause: err });
-      if (err.code !== undefined || err.code !== null) outErr.code = err.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error("Error al crear el producto", { cause: err });
     }
   }
 
@@ -141,11 +132,8 @@ export default class ProductService {
       );
       return updatedProduct;
     } catch (err) {
-      const outErr = new Error(`Error al actualizar Producto ${update.id}`, {
-        cause: err,
-      });
-      if (err.code !== undefined || err.code !== null) outErr.code = err.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error(`Error al actualizar Producto ${update.id}`, { cause: err });
     }
   }
 
@@ -153,16 +141,11 @@ export default class ProductService {
     try {
       const deleteResult = await this.dao.deleteOne({ _id: pid });
       if (deleteResult.matchedCount === 0) {
-        const errNoProd = new Error(`No se encontro producto con id ${id}`);
-        errNoProd.code = "ENOENT";
-        throw errNoProd;
+        throw new NotFoundError(`No se encontro producto con id ${id}`)
       }
     } catch (err) {
-      const outErr = new Error(`Error al eliminar el Producto ${pid}`, {
-        cause: err,
-      });
-      if (err.code !== undefined || err.code !== null) outErr.code = err.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error(`Error al eliminar el Producto ${pid}`, { cause: err, });
     }
   }
 }

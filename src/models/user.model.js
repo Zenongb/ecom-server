@@ -1,3 +1,5 @@
+import { InvalidParamsError } from "../errors/errors.js";
+
 import { randomUUID } from "node:crypto";
 import { ROLE_VALUES } from "../config.js";
 
@@ -33,9 +35,7 @@ export default class User {
       this.age = age
       this.login_hist = login_hist
     } catch (err) {
-      const outErr = new Error("Error al crear usuario!", { cause: err })
-      outErr.code = !!err.code? err.code : "EBADREQ"
-      throw outErr
+      throw new InvalidParamsError("Error al crear usuario!", err)
     }
   }
 

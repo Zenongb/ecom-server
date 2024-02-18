@@ -1,3 +1,5 @@
+import { InvalidParamsError } from "../errors/errors.js"
+
 import { notNull } from "../utils/lib.js"
 import { randomUUID } from "node:crypto"
 
@@ -25,19 +27,12 @@ export default class Product {
     // check de nullishness
     switch (false) {
       case !!title:
-        console.log("title")
       case !!description:
-        console.log("description")
       case !!price:
-        console.log("price")
       case !!code:
-        console.log("code")
       case !!category:
-        console.log("category")
         // agregar code a error para facilitar el mansaje al cliente
-        const errMissingParams = new Error("Faltan parametros para crear Producto")
-        errMissingParams.code = "MISSINGPARAMS"
-        throw errMissingParams
+        throw new InvalidParamsError("Faltan parametros para crear Producto")
     }
     // check de id para cuando se "crean" productos leidos
     this.#id = _id !== undefined? _id : id
@@ -54,8 +49,8 @@ export default class Product {
   set price(newPrice) {
     newPrice = Number(newPrice)
     // check si es num 
-    if (isNaN(newPrice)) throw new Error("El nuevo precio no es un numero")
-    if (newPrice < 0) throw new Error("El precio es menor a 0")
+    if (isNaN(newPrice)) throw new InvalidParamsError("El nuevo precio no es un numero")
+    if (newPrice < 0) throw new InvalidParamsError("El precio es menor a 0")
     this.#price = newPrice
   }
 
@@ -75,9 +70,7 @@ export default class Product {
     newStock = Number(newStock)
     // check si es num 
     if (isNaN(newStock)) {
-      const err = new Error("El nuevo precio no es un numero")
-      err.code = "EBADREQ"
-      throw err
+      throw InvalidParamsError("El nuevo precio no es un numero")
     }
     this.#stock = newStock
   }

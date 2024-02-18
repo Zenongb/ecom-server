@@ -1,3 +1,8 @@
+import {
+  NotFoundError,
+  InvalidParamsError,
+} from "../errors/errors.js"
+
 import Cart from "../models/cart.model.js"
 
 export default class CartService {
@@ -29,13 +34,11 @@ export default class CartService {
     try {
       const pojoCart = await this.dao.readOne({ _id: cid, populate: false})
       if (pojoCart === null) {
-        throw new Error("ENOENT");
+        throw new NotFoundError(`No existe carrito con id ${cid}`)
       }
       // check si existe el producto a aniadir
       if (!await this.productService.checkProducts(pid)) {
-        const badProdErr = new Error(`No existe producto de id ${pid}`)
-        badProdErr.code = "EBADREQ"
-        throw badProdErr
+        throw new InvalidParamsError(`No existe producto de id ${pid}`)
       }
       const cart = new Cart(pojoCart)
       cart.updateProducts({pid, quantity: amt})
@@ -44,19 +47,11 @@ export default class CartService {
       return cart.toPOJO();
     } catch (err) {
       // error handling
-      if (err.code === "EBADREQ") {
-        // TODO: limpiar
-        throw err
-      } else if (err.message === "ENOENT") {
-        // handle ENOENT, tiramos el error apropiadamente
-        const noCartErr = new Error(`No existe carrito con id ${cid}`);
-        noCartErr.code = "ENOENT";
-        throw noCartErr;
-      } else if (err.name === "CastError") {
+      if (err.name === "CastError") {
         // Handle mongo error cuando el id recibido no puede ser casteado a ObjectId
-        const wrongIdErr = new Error(`${cid} no es Id`);
-        wrongIdErr.code = "EWRONGID";
-        throw wrongIdErr;
+        throw new InvalidParamsError(`${cid} no es Id`)
+      } else if (!!err.code) {
+        throw err
       }
       throw new Error("error al actualizar el carrito", { cause: err });
     }
@@ -73,18 +68,11 @@ export default class CartService {
         cart.toPOJO()
       )
     } catch (err) {
-      // error handling
-      if (err.code === "ENOENT") {
-        // handle ENOENT
-        // tiramos el error apropiadamente
-        const noCartErr = new Error(`No existe carrito con id ${cid}`);
-        noCartErr.code = "ENOENT";
-        throw noCartErr;
+      if (!!err.code) {
+        throw err;
       } else if (err.name === "CastError") {
-        // Handle mongo error cuando el id recibido no puede ser casteado a ObjectId
-        const wrongIdErr = new Error(`${cid} no es Id`);
-        wrongIdErr.code = "EWRONGID";
-        throw wrongIdErr;
+        // Error id no castabla a ObjectId
+        throw new InvalidParamsError(`${cid} no es Id`);
       }
       throw new Error("error al actualizar el carrito", { cause: err });
     }
@@ -97,17 +85,11 @@ export default class CartService {
       const cart = new Cart(cartData)
       return cart.toPOJO();
     } catch (err) {
-      if (err.code === "ENOENT") {
-        // handle ENOENT
-        // tiramos el error apropiadamente
-        const noCartErr = new Error(`No existe carrito con id ${cid}`);
-        noCartErr.code = "ENOENT";
-        throw noCartErr;
+      if (!!err.code) {
+        throw err;
       } else if (err.name === "CastError") {
         // Error id no castabla a ObjectId
-        const wrongIdErr = new Error(`${cid} no es Id`);
-        wrongIdErr.code = "EWRONGID";
-        throw wrongIdErr;
+        throw new InvalidParamsError(`${cid} no es Id`);
       }
       throw new Error("Error al retribuir los carritos", { cause: err });
     }
@@ -117,9 +99,7 @@ export default class CartService {
     try {
       // check si existe el producto a aniadir
       if (!await this.productService.checkProducts(pids)) {
-        const badProdErr = new Error("Algunos productos no existen")
-        badProdErr.code = "EBADREQ"
-        throw badProdErr
+        throw new InvalidParamsError("Algunos productos no existen")
       }
       // transformar el array de pids(String) en objects
       const parsedPids = [];
@@ -135,12 +115,10 @@ export default class CartService {
       cart.updateProducts(parsedPids)
       return await this.dao.updateOne({_id: cart.id}, cart.toPOJO())
     } catch (err) {
-      if (err.code === "EBADREQ") {
+      if (!!err.code) {
         throw err
       } else if (err.name === "CastError") {
-        const errBadReq = new Error("Array de productos malformado");
-        errBadReq.code = "EBADREQ";
-        throw errBadReq;
+        throw new InvalidParamsError("Array de productos malformado")
       }
       throw new Error("Error al intentar hacer bulk update", { cause: err });
     }
@@ -154,18 +132,11 @@ export default class CartService {
       console.log("in delete all",cart)
       return await this.dao.updateOne({_id: cid}, cart.toPOJO())
     } catch (err) {
-      // error handling
-      if (err.code === "ENOENT") {
-        // handle ENOENT
-        // tiramos el error apropiadamente
-        const noCartErr = new Error(`No existe carrito con id ${cid}`);
-        noCartErr.code = "ENOENT";
-        throw noCartErr;
+      if (!!err.code) {
+        throw err
       } else if (err.name === "CastError") {
         // Handle mongo error cuando el id recibido no puede ser casteado a ObjectId
-        const wrongIdErr = new Error(`${cid} no es Id`);
-        wrongIdErr.code = "EWRONGID";
-        throw wrongIdErr;
+        throw new InvalidParamsError(`${cid} no es Id`);
       }
       throw new Error("error al borrar todos los productos", {cause: err});
     }

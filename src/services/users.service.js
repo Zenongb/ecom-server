@@ -1,3 +1,5 @@
+import { AuthError } from "../errors/errors.js";
+
 import User from "../models/user.model.js"
 import { hashPwd, comparePwd } from "../utils/hash.js";
 
@@ -15,9 +17,8 @@ export default class UserService {
       const user = new User(userData)
       return user.toPOJO() 
     } catch (err) {
-      const outErr = new Error("Error al bucar el usuario", { cause: err })
-      outErr.code = err?.code
-      throw outErr
+      if (!!err.code) throw err
+      throw new Error("Error al bucar el usuario", { cause: err })
     }
   }
 
@@ -33,7 +34,8 @@ export default class UserService {
       return finalUser.toPOJO()
     } catch (err) {
       // TODO: hacer prolijo
-      throw err
+      if (!!err.code) throw err
+      throw new Error("Error al registrar el usuario", {cause: err})
     }
   }
 
@@ -42,9 +44,7 @@ export default class UserService {
       console.log("login data is", loginData)
       let userData = await this.dao.readOne({ email: loginData.email });
       if (!userData) {
-        const errNotFound = new Error("User not found!");
-        errNotFound.code = "ENOENT"
-        throw errNotFound
+        throw new AuthError("Incorrect user or password")
       }
       console.log("userData is", userData )
       const user = new User(userData)
@@ -52,9 +52,7 @@ export default class UserService {
       // checkear si existe password
       if (user.hasPwd()) {
         if (!await comparePwd(loginData.password, user.password)) {
-          const errWrongPwd = new Error("Wrong email or password");
-          errWrongPwd.code = "EBADREQ"
-          throw errWrongPwd
+          throw new AuthError("Incorrect user or password")
         }
       }
       user.login_hist.push(Date.now());
@@ -63,7 +61,8 @@ export default class UserService {
       return user.toPOJO()
     } catch (err) {
       // TODO: hacer prolijo
-      throw err
+      if (!!err.code) throw err
+      throw new Error("Login Error", { cause: err})
     }
   }
 
@@ -74,6 +73,7 @@ export default class UserService {
       }, data)
       return new User(res).toPOJO()
     } catch (err) {
+      if (!!err.code) throw err
       throw new Error("Error al actializar usuario", {cause: err})
     }
   }

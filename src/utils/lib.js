@@ -1,9 +1,9 @@
+import { InvalidParamsError } from "../errors/errors"
+
 // Funcion de utilidad general
 export const notNull = (attrib) => {
   if (attrib === null || attrib === undefined) {
-    const err = new Error("El valor es nulo")
-    err.code = "EBADREQ"
-    throw err
+    throw new InvalidParamsError("El valor es nulo")
   }
   return attrib
 }
