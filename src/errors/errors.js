@@ -34,11 +34,12 @@ export class InvalidParamsError extends Error {
 }
 
 export class TypedInvalidParamsError extends InvalidParamsError {
-  constructor(paramTypes, obj) {
+  constructor(description, paramTypes, obj) {
     // construimos el mensaje para pasarle al super
-    let msg = ""
-    
-
+    let msg = description + "\n"
+    for (const param in paramTypes) {
+      msg += `- El campo ${param} necesita un argumento de tipo ${paramTypes[param]}, recibio: ${obj?.[param]}\n`
+    }
     super(msg)
   }
 }

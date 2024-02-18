@@ -1,8 +1,14 @@
 import { faker } from "@faker-js/faker"
-import { InvalidParamsError } from "../errors/errors.js"
+import { InvalidParamsError, TypedInvalidParamsError } from "../errors/errors.js"
 
 import { notNull } from "../utils/lib.js"
 import { randomUUID } from "node:crypto"
+
+class ProductInvalidParamsError extends TypedInvalidParamsError {
+  constructor(obj) {
+    super("Error al crear producto, algunos campos estan mal.", Product.paramTypes, obj)
+  }
+}
 
 export default class Product {
   // Clase contenedora de la informacion de los productos.
@@ -32,7 +38,16 @@ export default class Product {
       case !!code:
       case !!category:
         // agregar code a error para facilitar el mansaje al cliente
-        throw new InvalidParamsError("Faltan parametros para crear Producto")
+        throw new ProductInvalidParamsError({
+          title,
+          description,
+          price,
+          thumbnail,
+          code,
+          stock,
+          category,
+          status,
+        })
     }
     // check de id para cuando se "crean" productos leidos
     this.#id = _id !== undefined? _id : id
@@ -92,6 +107,16 @@ export default class Product {
       status: this.status,
       category: this.category
     }
+  }
+  static paramTypes = {
+    "title": "string",
+    "description": "string",
+    "price": "number",
+    "thumbnail": "string",
+    "code": "string",
+    "stock": "number",
+    "status": "bool",
+    "status": "string",
   }
   static genMockProduct() {
     return new Product({

@@ -1,15 +1,15 @@
 import { Router } from "express"
-import { ROLE_VALUES } from "../config.js"
+
 import {
   deleteController,
   getByIdController,
   getController, 
-  mockingProducts, 
   postController,
   putController,
 } from "../controllers/products.controller.js"
-import { auth } from "../middlewares/authorization.middleware.js"
 import { wsUpdatedProductsPropagation } from "../middlewares/updatedProducts.middleware.js"
+import { auth } from "../middlewares/authorization.middleware.js"
+import { ROLE_VALUES } from "../config.js"
 
 
 export const productsRouter = Router()
