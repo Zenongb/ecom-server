@@ -6,15 +6,9 @@ const pm = productService;
 
 export const getController = async (req, res, next) => {
   try {
-    let limit = req.query.limit;
-    // Parseamos limit
-    limit = limit === "" || limit === " " ? NaN : Number(limit); // check de empty string
-    limit = Number.isNaN(limit) ? PRODUCTS_PER_PAGE : limit;
     let sort = req.query.sort;
-    // Parseamos page
-    let page = req.query.page;
-    page = page === "" || page === " " ? NaN : Number(page); // check de empty string
-    page = Number.isNaN(page) ? 0 : page;
+    let limit = castNum(req.query.limit, PRODUCTS_PER_PAGE);
+    let page = castNum(req.query.page, 0);
     // Parseamos query
     const query = req.query.query;
     const searchQuery = {};
@@ -48,7 +42,7 @@ export const getController = async (req, res, next) => {
         sort: sort,
         page: page,
       });
-      return page === null ? null : "/api/products?" + queryParams;
+      return !!page ? null : "/api/products?" + queryParams;
     };
     return res.status(200).json({
       status: "Success",
@@ -57,8 +51,8 @@ export const getController = async (req, res, next) => {
       prevPage: prevPage,
       nextPage: nextPage,
       page: page,
-      hasPrevPage: prevPage === null ? false : true,
-      hasNextPage: nextPage === null ? false : true,
+      hasPrevPage: !!prevPage ? false : true,
+      hasNextPage: !!nextPage ? false : true,
       nextLink: setUri(nextPage),
       prevLink: setUri(prevPage),
     });
