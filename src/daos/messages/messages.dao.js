@@ -1,6 +1,6 @@
 import MessageModelMongoose from "./mongoose/message.model.mongoose.js"
 import MessageDaoMongoose from "./mongoose/messages.dao.mongoose.js"
-import { MODE } from "../../config.js"
+import { MODE } from "../../config/constants.config.js"
 
 let messagesDao
 

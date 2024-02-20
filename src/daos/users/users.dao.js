@@ -1,4 +1,4 @@
-import { MODE } from "../../config.js"
+import { MODE } from "../../config/constants.config.js"
 import UserDaoMongoose from "./mongoose/users.dao.mongoose.js"
 import UserModel from "./mongoose/user.model.mongoose.js"
 

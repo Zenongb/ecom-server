@@ -1,6 +1,6 @@
 import Product from "../models/product.model.js"
 
-import { PRODUCTS_PER_PAGE } from "../config.js"
+import { PRODUCTS_PER_PAGE } from "../config/constants.config.js"
 import { NotFoundError } from "../errors/errors.js";
 
 export default class ProductService {

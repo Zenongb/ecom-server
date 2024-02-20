@@ -1,5 +1,5 @@
 import { ForbiddenError, AuthError } from "../errors/errors.js"
-import { ROLE_VALUES } from "../config.js";
+import { ROLE_VALUES } from "../config/constants.config.js";
 // middleware de autorización por privilegios
 export const auth = role => {
   return (req,res,next) => {

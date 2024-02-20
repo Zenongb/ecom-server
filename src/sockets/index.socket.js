@@ -5,11 +5,11 @@ import { messengerConnection, newMessage } from "./messenger.socket.js";
 export const initClient = socket => {
   socket.on("join", room => {
     socket.join(room);
-    console.log("client joined room", room);
+    logger.log("debug", "client joined room", room);
     socket.emit("joinedRoom")
   });
   socket.on("joinedRoom", () => {
-    console.log("executing joinedRoom event")
+    logger.log("debug", "executing joinedRoom event")
     productsConnection(socket);
     messengerConnection(socket);
   })

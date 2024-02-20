@@ -1,6 +1,6 @@
 import { ERROR_CODE } from "../errors/errors.js"
 export default function (error, _, res, __) {
-  console.log("en error handler", error)
+  logger.log("debug", "en error handler", error)
   const errPayload = {
     httpStatus: 500,
     message: "Internal server error"

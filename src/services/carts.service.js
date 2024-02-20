@@ -1,3 +1,4 @@
+import logger from "../utils/logger.js"
 import {
   NotFoundError,
   InvalidParamsError,
@@ -129,7 +130,7 @@ export default class CartService {
       const cartData = await this.dao.readOne({_id: cid, populate: false})
       const cart = new Cart(cartData)
       cart.deleteAllProducts()
-      console.log("in delete all",cart)
+      logger.log("debug", "in delete all",cart)
       return await this.dao.updateOne({_id: cid}, cart.toPOJO())
     } catch (err) {
       if (!!err.code) {

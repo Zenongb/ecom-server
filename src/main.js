@@ -3,14 +3,15 @@ import { Server } from "socket.io"
 import { app } from './app/app.js'
 import { closeDb, connectDb } from "./database/mongodb.database.js"
 import { initClient } from "./sockets/index.socket.js"
+import logger from "./utils/logger.js"
 
-import { PORT } from "./config.js"
+import { PORT } from "./config/constants.config.js"
 
 await connectDb()
 
 // instanciar el servidor http
 const httpServer = app.listen(PORT, () => {
-  console.log(`listening on localhost:${PORT}`)
+  logger.log("info", `listening on localhost:${PORT}`)
 })
 
 // instanciar websockets server

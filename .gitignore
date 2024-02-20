@@ -3,3 +3,4 @@ data/
 .devlog.md
 .env
 run
+logs/

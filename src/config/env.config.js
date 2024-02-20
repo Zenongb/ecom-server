@@ -1,27 +1,4 @@
-export const MODE = "online"
-
-export const ROLE_VALUES = {
-  _AUTH_ONLY: "auth",
-  _SUPER_USER: "super",
-  _ADMIN: "admin",
-  _USER: "user",
-}
-
-// variable del path de productos
-export const PRODUCTS_PATH = "./data/products.json"; // cambiar a path absoluto
-// variable de path de carrito
-export const CARTS_PATH = "./data/carts.json"; // cambiar a path absoluto
-
-// Variable de cantidad de productos por pagina
-export const PRODUCTS_PER_PAGE = 10
-
-export const PORT = 8080
-
-// admin email
-export const ADMIN_USER = {
-  mail: "adminCoder@coder.com",
-  pwd: "adminCod3r123"
-}
+import logger from "../utils/logger.js"
 
 // generacion de la database URI 
 let mainUser
@@ -30,13 +7,13 @@ const mainDatabase = "ecommerce"
 // check si exiten variables de amibente para vincular la db y protejer 
 // secretos como user y pwd
 if (process.env.MAIN_DB_URI) {
-  console.log("Recolectando variables de ambiente para conexion con la main database")
+  logger.log("info", "Recolectando variables de ambiente para conexion con la main database")
   // agarramos el URI
   mainDbUri = process.env.MAIN_DB_URI
   // Procesamos user y pwd
   if (process.env.MAIN_DB_USER && process.env.MAIN_DB_PWD) {
     // se pasa username y pwd de la database
-    console.log("Username y password reconocidos")
+    logger.log("info", "Username y password reconocidos")
     mainUser = `${process.env.MAIN_DB_USER}:${process.env.MAIN_DB_PWD}@`
   } else {
     // no se pasa nada
@@ -55,13 +32,13 @@ const authDatabase = "auth"
 // check si exiten variables de amibente para vincular la db y protejer 
 // secretos como user y pwd
 if (process.env.AUTH_DB_URI) {
-  console.log("Recolectando variables de ambiente para conexion con la database auth")
+  logger.log("info", "Recolectando variables de ambiente para conexion con la database auth")
   // agarramos el URI
   authDbUri = process.env.AUTH_DB_URI
   // Procesamos user y pwd
   if (process.env.AUTH_DB_USER && process.env.AUTH_DB_PWD) {
     // se pasa username y pwd de la database
-    console.log("Username y password reconocidos")
+    logger.log("info", "Username y password reconocidos")
     authUser = `${process.env.AUTH_DB_USER}:${process.env.AUTH_DB_PWD}@`
   } else {
     // no se pasa nada
@@ -78,7 +55,7 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("Missing session secret")
 } else {
   ss = process.env.SESSION_SECRET
-  console.log("gathered session secret")
+  logger.log("info", "gathered session secret")
 }
 export const SESSION_SECRET = ss
 
@@ -91,12 +68,8 @@ if (!process.env.GITHUB_CLIENT_SECRET || !process.env.GITHUB_CLIENT_ID || !proce
   ghCbUrl = process.env.GITHUB_CALLBACK_URL
   ghClient = process.env.GITHUB_CLIENT_ID
   ghSecret = process.env.GITHUB_CLIENT_SECRET
-  console.log("gathered github id & secret")
+  logger.log("info", "gathered github id & secret")
 }
 export const GITHUB_CALLBACK_URL = ghCbUrl
 export const GITHUB_CLIENT_ID = ghClient
 export const GITHUB_CLIENT_SECRET = ghSecret
-
-
-
-

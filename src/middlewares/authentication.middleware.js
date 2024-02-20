@@ -4,14 +4,18 @@ import { Strategy as GithubStrategy } from "passport-github2"
 
 import { userService } from "../services/index.service.js"
 
-import { GITHUB_CALLBACK_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from "../config.js";
+import {
+  GITHUB_CALLBACK_URL,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET 
+} from "../config/env.config.js";
 
 passport.use('loginLocal', new LocalStrategy({
   usernameField: 'email'
 }, async function(username, password, done) {
   try {
     const userData = await userService.loginUser({ email: username, password: password })
-    console.log("in loginLocal", userData)
+    logger.log("debug", "in loginLocal", userData)
     delete userData.login_hist
     done(null, userData)
   } catch (err) {
@@ -32,7 +36,7 @@ passport.use("githubLogin", new GithubStrategy({
       email: profile._json.email || profile._json.login,
       password: String(profile._json.id)
     })
-    console.log(user)
+    logger.log("debug", "in githublogin, user is", user)
   } catch (err) {
     // agarramos el error not found para resolver el caso de
     // que no se haya un usuario registrado
@@ -46,13 +50,12 @@ passport.use("githubLogin", new GithubStrategy({
         .catch(err => {
           done(err)
         })
-      console.log(user)
     } else {
       // es otro error
       done(err)    
     }
   }
-  console.log("in githubLogin, user is", user)
+  logger.log("debug", "in githubLogin, user is", user)
   delete user?.login_hist
   done(null, user)
 }))

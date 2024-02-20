@@ -1,7 +1,7 @@
 import { InvalidParamsError } from "../errors/errors.js";
 
 import { randomUUID } from "node:crypto";
-import { ROLE_VALUES } from "../config.js";
+import { ROLE_VALUES } from "../config/constants.config.js";
 
 import Cart from "./cart.model.js"
 

@@ -6,7 +6,7 @@ const cm = cartService;
 export const getByIdController = async (req, res, next) => {
   const cid = req.params.cid;
   const populate = req.query.populate
-  console.log("in controller, cid, populate", cid, populate)
+  logger.log("debug", "in controller, cid, populate", cid, populate)
   try {
     // buscamos el carrito
     const cart = await cm.getCartById(cid, populate);
@@ -67,8 +67,7 @@ export const bulkUpdateController = async (req, res) => {
       throw err
     }
     const updateRes = await cm.bulkUpdateProducts(cid, products);
-    console.log("in bulk update controller, updateRes:");
-    console.log(updateRes);
+    logger.log("debug", "in bulk update controller, updateRes:", updateRes);
     if (updateRes.modifiedCount === 1) {
       res.status(201).json({
         status: "success",
@@ -83,7 +82,7 @@ export const bulkUpdateController = async (req, res) => {
 export const removeProductController = async (req, res, next) => {
   const cid = req.params.cid;
   const pid = req.params.pid;
-  console.log(`Removiendo una unidad de producto ${pid} al carrito ${cid}`);
+  logger.log("debug", `Removiendo una unidad de producto ${pid} al carrito ${cid}`);
   try {
     await cm.removeProduct(cid, pid);
     return res.status(200).json({

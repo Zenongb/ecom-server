@@ -16,7 +16,7 @@ export const messengerConnection = async socket => {
     const lastMessages = await mm.getLastMessages()
     socket.emit("getMessages", lastMessages)
   } catch (err) {
-    console.log(err)   
+    logger.log("error", err)   
   }
 }
 
@@ -28,6 +28,6 @@ export const newMessage = async (msg) => {
       wsServer.to("messenger").emit("newMessage", message)
     }
   } catch (err) {
-    console.log(err)   
+    logger.log("error", err)   
   }
 }

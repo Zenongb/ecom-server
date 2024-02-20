@@ -3,7 +3,7 @@ import CartModelMongoose from "./mongoose/cart.model.mongoose.js"
 import CartDaoMongoose from "./mongoose/carts.dao.mongoose.js"
 import CartDaoFilesystem from "./filesystem/carts.dao.filesystem.js"
 
-import {CARTS_PATH, MODE} from "../../config.js"
+import {CARTS_PATH, MODE} from "../../config/constants.config.js"
 
 
 let cartsDao

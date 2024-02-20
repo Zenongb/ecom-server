@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ROLE_VALUES } from "../config.js";
+import { ROLE_VALUES } from "../config/constants.config.js";
 
 import {
   getByIdController,

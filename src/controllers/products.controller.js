@@ -1,4 +1,4 @@
-import { PRODUCTS_PER_PAGE } from "../config.js";
+import { PRODUCTS_PER_PAGE } from "../config/constants.config.js";
 import {productService} from "../services/index.service.js";
 import { castNum } from "../utils/lib.js";
 

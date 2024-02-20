@@ -1,5 +1,9 @@
 import { Router } from "express"
-import { register, getCurrentUserController, updateUserController } from "../controllers/user.controller.js"
+import {
+  register,
+  getCurrentUserController,
+  updateUserController 
+} from "../controllers/user.controller.js"
 import passport from "passport"
 
 export const usersRouter = Router()

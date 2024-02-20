@@ -1,6 +1,6 @@
 import session from "express-session"
 import MongoStore from "connect-mongo"
-import { AUTH_DB_URL, SESSION_SECRET } from "../config.js"
+import { AUTH_DB_URL, SESSION_SECRET } from "../config/env.config.js"
 
 // KNOWN ERROR: connect-mongo genera un error con el gracefull shutdown 
 // y la funcionalidad de nodemon
