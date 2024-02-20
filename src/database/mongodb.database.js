@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import { MAIN_DB_URL } from '../config/env.config.js'
+import logger from "../utils/logger.js"
 
 export async function connectDb() {
   try {

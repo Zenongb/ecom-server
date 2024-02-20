@@ -20,7 +20,6 @@ export default class UserDaoMongoose {
   }
 
   async updateOne(query, data) {
-    console.log("in updateOne, query & data ", query, data)
     return await this.model.findOneAndUpdate(
       set_id(query),
       { $set: data },

@@ -34,7 +34,7 @@ export default class MessageService {
   async addMessage(msgData) {
     try {
       const createdMsg = await this.dao.create(msgData);
-      console.log(createdMsg);
+      logger.log("debug", "new created message", createdMsg);
       return createdMsg;
     } catch (err) {
       throw new Error("error al crear mensaje", { cause: err });

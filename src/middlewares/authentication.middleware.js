@@ -1,6 +1,7 @@
 import passport from "passport"
 import { Strategy as LocalStrategy } from "passport-local"
 import { Strategy as GithubStrategy } from "passport-github2"
+import logger from "../utils/logger.js"
 
 import { userService } from "../services/index.service.js"
 
@@ -55,7 +56,7 @@ passport.use("githubLogin", new GithubStrategy({
       done(err)    
     }
   }
-  logger.log("debug", "in githubLogin, user is", user)
+  logger.log("debug", `in githubLogin, user is ${user.email}`)
   delete user?.login_hist
   done(null, user)
 }))

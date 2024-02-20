@@ -4,6 +4,7 @@ import User from "../models/user.model.js"
 import { hashPwd, comparePwd } from "../utils/hash.js";
 
 import { ADMIN_USER } from "../config/constants.config.js";
+import logger from "../utils/logger.js";
 
 export default class UserService {
   constructor(usersDao) {
@@ -13,7 +14,6 @@ export default class UserService {
   async getUser(userId) {
     try {
       const userData = await this.dao.readOne({ _id: userId, populate: true })
-      logger.log("debug", "in getUser, user is", userData)
       const user = new User(userData)
       return user.toPOJO() 
     } catch (err) {
@@ -41,12 +41,12 @@ export default class UserService {
 
   async loginUser(loginData) {
     try {
-      logger.log("debug", "login data is", loginData)
       let userData = await this.dao.readOne({ email: loginData.email });
       if (!userData) {
         throw new AuthError("Incorrect user or password")
       }
       const user = new User(userData)
+      logger.log("debug", `user mail ${user.mail}`)
       // checkear si existe password
       if (user.hasPwd()) {
         if (!await comparePwd(loginData.password, user.password)) {
@@ -55,7 +55,6 @@ export default class UserService {
       }
       user.login_hist.push(Date.now());
       await this.dao.updateOne({_id: user.id}, user.toPOJO(true))
-      logger.log("debug", 'userdata is', user)
       return user.toPOJO()
     } catch (err) {
       // TODO: hacer prolijo

@@ -3,7 +3,6 @@ import { ticketService } from "../services/index.service.js"
 export const postController = async (req, res, next) => {
   try {
     const user = req.user
-    console.log("in controller, user", user)
     const [ticket, cart] = await ticketService.createTicket(user)
     res.status(200).json({
       status: "success",

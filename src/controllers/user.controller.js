@@ -16,10 +16,10 @@ export const register = async (req, res, next) => {
 export const updateUserController = async (req, res, next) => {
   const uid = req.params.uid
   const updateData = req.body
-  console.log("updateData in controller is", updateData)
+  logger.log("debug", "updateData in controller is", updateData)
   try {
     const updUser = await userService.update(uid, updateData)
-    console.log("in controller, updateRes", updUser)
+    logger.log("debug", "in controller, updateRes", updUser)
     req.login(updUser,(err) => {
       if (err) { return next(err); }
     })
