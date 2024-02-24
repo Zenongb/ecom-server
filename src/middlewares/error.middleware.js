@@ -1,7 +1,10 @@
 import logger from "../utils/logger.js"
 import { ERROR_CODE } from "../errors/errors.js"
 export default function (error, _, res, __) {
-  logger.log("error", "en error handler", error)
+  logger.log("error", {
+    message:  `in http error handler error message is ${error.message}, code is ${error.code || "[no code]"}`,
+    stack: error.stack
+  })
   const errPayload = {
     httpStatus: 500,
     message: "Internal server error"

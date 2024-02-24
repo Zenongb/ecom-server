@@ -19,8 +19,14 @@ export const wsServer = new Server(httpServer)
 // conectar sockets
 wsServer.on("connect", initClient)
 
+// implementacion del unhandled error logger
+
+process.on("uncaughtException", (err) => {
+  logger.log("fatal", `Uncaught error with message: ${err.message} & code: ${err.code || "[no code]"}`)
+})
+
 // pro un error indefinido con la store de connect mongo, voy a deprecar temporal
-// mente el gracefull shutdown
+// mente el graceful shutdown
 // Realizamos un graceful shutdown del sistema
 // process.on('SIGTERM', () => {
 //   console.log('Cerrando Servidor.')
