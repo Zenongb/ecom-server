@@ -7,6 +7,7 @@ import errorMiddleware from "../middlewares/error.middleware.js";
 import httpLogMiddleware from "../middlewares/httpLogs.middleware.js"
 
 import { mockingProducts } from "../controllers/products.controller.js";
+import { loggerTest } from "../controllers/logger.controller.js"
 
 
 export const indexRouter = Router()
@@ -19,3 +20,6 @@ indexRouter.use("/", usersRouter, errorMiddleware)
 indexRouter.get("/mockingproducts", mockingProducts, errorMiddleware)
 
 indexRouter.use("/api", apiRouter, errorMiddleware)
+
+// logger test
+indexRouter.use("/loggerTest", loggerTest)

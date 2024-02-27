@@ -13,7 +13,7 @@ const logLevels = {
 
 const ErrorFileTransport = new winston.transports.File({
   level: "error",
-  filename: `logs/errors.${Date.now()}.log`
+  filename: `logs/errors.log`
 })
 
 let logger
