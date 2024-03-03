@@ -22,7 +22,10 @@ wsServer.on("connect", initClient)
 // implementacion del unhandled error logger
 
 process.on("uncaughtException", (err) => {
-  logger.log("fatal", `Uncaught error with message: ${err.message} & code: ${err.code || "[no code]"}`)
+  logger.log("fatal", {
+    message:  `Uncaught error with message: ${err.message} & code: ${err.code || "[no code]"}`,
+    stack: err.stack
+  })
 })
 
 // pro un error indefinido con la store de connect mongo, voy a deprecar temporal

@@ -1,3 +1,4 @@
+import logger from "../utils/logger.js";
 import {cartService} from "../services/index.service.js";
 import { castNum } from "../utils/lib.js";
 
@@ -6,7 +7,7 @@ const cm = cartService;
 export const getByIdController = async (req, res, next) => {
   const cid = req.params.cid;
   const populate = req.query.populate
-  logger.log("debug", "in controller, cid, populate", cid, populate)
+  logger.log("debug", "in controller, cid %s, populate %s", cid, populate)
   try {
     // buscamos el carrito
     const cart = await cm.getCartById(cid, populate);

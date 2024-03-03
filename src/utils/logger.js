@@ -1,4 +1,4 @@
-import winston from "winston";
+import winston, { format } from "winston";
 import { ENV } from "../config/constants.config.js"
 
 // generamos unas constantes que nos van a servir
@@ -16,6 +16,14 @@ const ErrorFileTransport = new winston.transports.File({
   filename: `logs/errors.log`
 })
 
+const loggerConfig = () => {
+  return format.combine(
+    format.timestamp(),
+    format.splat(),
+    format.simple(),
+  )
+}
+
 let logger
 if (ENV === "production") {
   logger = winston.createLogger({
@@ -23,7 +31,8 @@ if (ENV === "production") {
     levels: logLevels,
     transports: [
       ErrorFileTransport,
-    ]
+    ],
+    format: loggerConfig()
   })
 } else {
   logger = winston.createLogger({
@@ -32,7 +41,8 @@ if (ENV === "production") {
     transports: [
       new winston.transports.Console(),
       ErrorFileTransport
-    ]
+    ],
+    format: loggerConfig()
   })
 }
 
