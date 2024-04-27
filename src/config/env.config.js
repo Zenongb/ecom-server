@@ -1,5 +1,16 @@
 import logger from "../utils/logger.js"
 
+export const MAILER_OPTS = {
+  host: process.env.MAILER_HOST,
+  port: process.env.MAILER_PORT,
+  auth: {
+    user: process.env.MAILER_USER,
+    pass: process.env.MAILER_PWD,
+  },
+  secure: false
+}
+
+
 // generacion de la database URI 
 let mainUser
 let mainDbUri
