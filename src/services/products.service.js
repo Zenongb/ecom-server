@@ -4,8 +4,9 @@ import { PRODUCTS_PER_PAGE } from "../config/constants.config.js"
 import { NotFoundError } from "../errors/errors.js";
 
 export default class ProductService {
-  constructor(productDao) {
+  constructor(productDao, mailerService) {
     this.dao = productDao
+    this.mailer = mailerService
   }
 
   genMockProducts(amount) {
@@ -148,10 +149,16 @@ export default class ProductService {
 
   async deleteProduct(pid) {
     try {
+      const prod = await this.dao.findOne({id: pid})
       const deleteResult = await this.dao.deleteOne({ _id: pid });
       if (deleteResult.matchedCount === 0) {
         throw new NotFoundError(`No se encontro producto con id ${id}`)
       }
+      await this.mailer.sendMail({
+        to: prod.owner,
+        subject: "Deleted Product",
+        body: `Deleted the product ${prod.title}\n\n` + JSON.stringify(prod, null, 2)
+      })
     } catch (err) {
       if (!!err.code) throw err
       throw new Error(`Error al eliminar el Producto ${pid}`, { cause: err, });

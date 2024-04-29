@@ -1,6 +1,6 @@
 import {userService} from "../services/index.service.js";
 
-export const register = async (req, res, next) => {
+export const registerController = async (req, res, next) => {
   const userInfo = req.body;
   try {
     const registerResult = await userService.registerUser(userInfo);
@@ -44,6 +44,18 @@ export const getCurrentUserController = async (req, res, next) => {
   }
 }
 
+export const getUsersController = async (req, res, next) => {
+  try {
+    const userData = await userService.getUsers({})
+    res.status(200).json({
+      status: "success",
+      payload: userData
+    })
+  } catch (err) {
+    next(err)
+  }
+}
+
 // DEPRECADO
 export const login = async (req, res, next) => {
   const userInfo = req.body;
@@ -71,3 +83,4 @@ export const login = async (req, res, next) => {
     next(err)
   }
 };
+

@@ -18,7 +18,7 @@ export const productsRouter = Router()
 productsRouter.post(
   "/",
   wsUpdatedProductsPropagation,
-  auth(ROLE_VALUES._ADMIN),
+  auth([ROLE_VALUES._ADMIN, ROLE_VALUES._PREMIUM]),
   postController
 )
 
@@ -33,7 +33,7 @@ productsRouter.get("/:pid", getByIdController)
 productsRouter.put(
   "/:pid",
   wsUpdatedProductsPropagation,
-  auth(ROLE_VALUES._ADMIN),
+  auth([ROLE_VALUES._PREMIUM, ROLE_VALUES._ADMIN]),
   putController
 )
 
@@ -41,6 +41,6 @@ productsRouter.put(
 productsRouter.delete(
   "/:pid",
   wsUpdatedProductsPropagation,
-  auth(ROLE_VALUES._ADMIN),
+  auth([ROLE_VALUES._PREMIUM, ROLE_VALUES._ADMIN]),
   deleteController
 )

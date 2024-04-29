@@ -13,7 +13,12 @@ import messagesDao from "../daos/messages/messages.dao.js"
 import TicketService from "./tickets.service.js"
 import ticketsDao from "../daos/tickets/tickets.dao.js"
 
-export const productService = new ProductService(productsDao)  
+import MailerService from "./mailer/mailer.service.js"
+import { MAILER_OPTS } from "../config/env.config.js"
+
+const mailerService = new MailerService(MAILER_OPTS)
+
+export const productService = new ProductService(productsDao, mailerService)  
 export const userService = new UserService(usersDao)  
 export const msgService = new MessageService(messagesDao)  
 export const cartService = new CartService(cartsDao, productService)  

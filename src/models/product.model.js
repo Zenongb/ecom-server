@@ -29,6 +29,7 @@ export default class Product {
     status=true,
     id=randomUUID(),
     _id=undefined,
+    owner=""
   }) {
     // check de nullishness
     switch (false) {
@@ -59,6 +60,7 @@ export default class Product {
     this.stock = notNull(stock)
     this.status = notNull(status)
     this.category = notNull(category)
+    this.owner = owner
   }
 
   set price(newPrice) {
@@ -105,7 +107,8 @@ export default class Product {
       code: this.code,
       stock: this.stock,
       status: this.status,
-      category: this.category
+      category: this.category,
+      owner: this.owner
     }
   }
   static paramTypes = {
@@ -116,7 +119,8 @@ export default class Product {
     "code": "string",
     "stock": "number",
     "status": "bool",
-    "status": "string",
+    "category": "string",
+    "owner": "string",
   }
   static genMockProduct() {
     return new Product({

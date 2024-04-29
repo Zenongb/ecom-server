@@ -4,6 +4,7 @@ export const ROLE_VALUES = {
   _AUTH_ONLY: "auth",
   _SUPER_USER: "super",
   _ADMIN: "admin",
+  _PREMIUM: "premium",
   _USER: "user",
 }
 // variable del path de productos

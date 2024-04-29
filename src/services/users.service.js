@@ -11,6 +11,16 @@ export default class UserService {
     this.dao = usersDao
   }
 
+  async getUsers(query) {
+    try {
+      const users = await this.dao.readMany(query)
+      const usersData = users.map(u => new User(u).toPOJO())
+      return usersData
+    } catch (err) {
+      throw err
+    }
+  }
+
   async getUser(userId) {
     try {
       const userData = await this.dao.readOne({ _id: userId, populate: true })

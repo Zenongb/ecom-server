@@ -5,14 +5,19 @@ export const auth = role => {
   return (req,res,next) => {
     const user = req.user
     // check de super user
+    if (!(role instanceof Array)) role = [role]
     if (user?.role === ROLE_VALUES._SUPER_USER) return next()
     if (role === ROLE_VALUES._AUTH_ONLY && req.isAuthenticated()) {
       // solo auth necesaria
       return next()
-    } else if (user?.role === role) {
-      // coinciden los privilegios
-      return next()
-    } else if (req.isAuthenticated()){
+    } 
+    for (const r of role) {
+      if (user?.role === r) {
+        // coinciden los privilegios
+        return next()
+      }
+    }
+    if (req.isAuthenticated()){
       // no coinciden y hay un usuario logueado
       next(new ForbiddenError("User is forbidden to enter this link"))
     } else {

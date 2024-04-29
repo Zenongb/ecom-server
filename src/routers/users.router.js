@@ -1,14 +1,20 @@
 import { Router } from "express"
 import {
-  register,
+  registerController,
   getCurrentUserController,
-  updateUserController 
+  updateUserController, 
+  getUsersController
 } from "../controllers/user.controller.js"
+import { auth } from "../middlewares/authorization.middleware.js"
+import { ROLE_VALUES } from "../config/constants.config.js"
+
 import passport from "passport"
 
 export const usersRouter = Router()
 
-usersRouter.post("/register", register)
+usersRouter.get("/users", auth(ROLE_VALUES._ADMIN), getUsersController)
+
+usersRouter.post("/register", registerController)
 
 usersRouter.post("/login", passport.authenticate("loginLocal", {failWithError: true}))
 
