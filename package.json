@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file=.env .",
+    "start-deployment": "node .",
     "dev": "nodemon --env-file=.env --signal SIGTERM -e 'js' .",
     "gen": "node --env-file=.env src/utils/productGenerator.js"
   },
